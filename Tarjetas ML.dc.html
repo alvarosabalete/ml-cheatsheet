@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#0b0c11;font-family:'Space Grotesk',sans-serif;-webkit-font-smoothing:antialiased;}
+  a{color:#8fb2ff;text-decoration:none;} a:hover{color:#b9ccff;}
+  *{box-sizing:border-box;}
+  @keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  ::-webkit-scrollbar{width:10px;height:10px;} ::-webkit-scrollbar-thumb{background:#2a2e3a;border-radius:6px;}
+</style>
+<script src="ml.js"></script>
+</helmet>
+
+<section ref="{{ rootRef }}" style="min-height:100vh;padding:44px 40px 90px;background-color:#0b0c11;background-image:radial-gradient(1100px 640px at 10% -8%, rgba(91,142,240,.26), transparent 60%), radial-gradient(1000px 640px at 94% 4%, rgba(181,123,255,.24), transparent 62%), radial-gradient(1200px 780px at 66% 112%, rgba(120,86,224,.20), transparent 60%), linear-gradient(180deg, #0d0e15 0%, #0a0b10 100%);background-attachment:fixed;">
+
+  <div style="max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:12px;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#8b8fa3;">{{ t.kicker }}</div>
+    <h1 style="margin:0;font-size:clamp(28px,4vw,38px);font-weight:700;color:#f4f5f8;letter-spacing:-0.025em;">{{ t.title }}</h1>
+    <p style="margin:0;max-width:700px;font-size:15px;line-height:1.55;color:#a3a8b6;text-wrap:pretty;">{{ t.intro }}</p>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;max-width:1200px;margin:26px auto 0;">
+    <div style="display:flex;flex-wrap:wrap;gap:9px;">
+      <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="4">
+        <button onClick="{{ cat.onClick }}" style="{{ cat.style }}">
+          <span>{{ cat.label }}</span>
+          <span style="{{ cat.badge }}">{{ cat.n }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="display:inline-flex;gap:3px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:3px;flex-shrink:0;">
+      <button onClick="{{ setEs }}" style="{{ esStyle }}">ES</button>
+      <button onClick="{{ setEn }}" style="{{ enStyle }}">EN</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(322px,1fr));gap:26px;max-width:1200px;margin:30px auto 0;">
+    <sc-for list="{{ visibleModels }}" as="m" hint-placeholder-count="9">
+      <div onClick="{{ m.onClick }}" style="background:#16181f;border:1px solid #262a35;border-radius:20px;overflow:hidden;box-shadow:0 24px 50px -26px rgba(10,12,20,.55);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;animation:fadein .4s ease both;" style-hover="transform:translateY(-5px);box-shadow:0 34px 64px -26px rgba(10,12,20,.62);border-color:#39404f;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px 11px;">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <span style="width:9px;height:9px;border-radius:50%;background:{{ m.accent }};box-shadow:0 0 10px {{ m.accent }};"></span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8d93a6;">{{ m.cat }}</span>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#565c6d;">{{ m.num }}</span>
+        </div>
+        <div style="padding:0 18px;">
+          <canvas data-anim="{{ m.anim }}" data-accent="{{ m.accent }}" style="width:100%;height:188px;display:block;border-radius:12px;background:#0f1117;border:1px solid #222633;"></canvas>
+        </div>
+        <div style="padding:15px 18px 20px;">
+          <div style="font-size:20px;font-weight:700;color:#f3f2ef;letter-spacing:-0.01em;">{{ m.name }}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:{{ m.textAccent }};margin-top:3px;">{{ m.sub }}</div>
+          <p style="margin:11px 0 0;font-size:12.5px;line-height:1.5;color:#a3a8b6;text-wrap:pretty;">{{ m.desc }}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:15px;">
+            <sc-for list="{{ m.chips }}" as="chip" hint-placeholder-count="3">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:{{ m.textAccent }};background:{{ m.chipBg }};border:1px solid {{ m.chipBd }};padding:4px 8px;border-radius:6px;">{{ chip }}</span>
+            </sc-for>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:17px;padding-top:13px;border-top:1px solid #262a35;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6b7181;">{{ m.footer }}</span>
+            <span style="color:{{ m.textAccent }};font-size:16px;">→</span>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<sc-if value="{{ openModel }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ close }}" style="position:fixed;inset:0;z-index:60;background:rgba(12,10,8,.66);backdrop-filter:blur(7px);display:flex;align-items:flex-start;justify-content:center;padding:36px 22px;overflow:auto;animation:fadein .22s ease both;">
+    <div onClick="{{ stop }}" style="width:100%;max-width:980px;background:#14161d;border:1px solid #2b303d;border-radius:22px;overflow:hidden;box-shadow:0 50px 100px -34px rgba(0,0,0,.75);">
+
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 30px 22px;border-bottom:1px solid #23283400;background:linear-gradient(180deg,{{ openModel.headBg }},#14161d);">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <span style="width:9px;height:9px;border-radius:50%;background:{{ openModel.accent }};box-shadow:0 0 12px {{ openModel.accent }};"></span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:{{ openModel.accent }};">{{ openModel.cat }}</span>
+          </div>
+          <div style="font-size:27px;font-weight:700;color:#f3f2ef;letter-spacing:-0.02em;">{{ openModel.name }}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#8d93a6;">{{ openModel.sub }}</div>
+        </div>
+        <button onClick="{{ close }}" style="flex-shrink:0;width:36px;height:36px;border-radius:10px;border:1px solid #333a49;background:#1b1e27;color:#cfd3dd;font-size:17px;cursor:pointer;line-height:1;" style-hover="background:#242833;color:#fff;">✕</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+
+        <div style="padding:24px 28px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#6b7181;">{{ leftLbl }}</div>
+            <sc-if value="{{ hasPg }}" hint-placeholder-val="{{ true }}">
+              <div style="display:inline-flex;gap:3px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);border-radius:9px;padding:3px;">
+                <button onClick="{{ setAnim }}" style="{{ animTabStyle }}">{{ t.animTab }}</button>
+                <button onClick="{{ setPg }}" style="{{ pgTabStyle }}">{{ t.pgTab }}</button>
+              </div>
+            </sc-if>
+          </div>
+          <canvas ref="{{ modalRef }}" data-anim="{{ openModel.anim }}" data-accent="{{ openModel.accent }}" style="width:100%;height:230px;display:block;border-radius:14px;background:#0f1117;border:1px solid #222633;"></canvas>
+
+          <sc-if value="{{ isAnim }}" hint-placeholder-val="{{ true }}">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#6b7181;margin:24px 0 12px;">{{ openModel.stepsLbl }}</div>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <sc-for list="{{ openModel.steps }}" as="st" hint-placeholder-count="4">
+                <div style="{{ st.wrap }}">
+                  <div style="{{ st.badge }}">{{ st.n }}</div>
+                  <div style="display:flex;flex-direction:column;gap:2px;">
+                    <div style="font-size:13.5px;font-weight:600;color:#e7e9ef;">{{ st.t }}</div>
+                    <div style="font-size:12px;line-height:1.45;color:#9297a6;">{{ st.d }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isPlayground }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:20px 0 12px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#6b7181;">{{ t.controlsLbl }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6b7181;">{{ pgCaption }}</span>
+            </div>
+            <div>{{ pgPanel }}</div>
+          </sc-if>
+        </div>
+
+        <div style="padding:24px 28px;max-height:70vh;overflow:auto;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#6b7181;margin-bottom:10px;">{{ openModel.whatLbl }}</div>
+          <p style="margin:0;font-size:13.5px;line-height:1.6;color:#c7cad3;text-wrap:pretty;">{{ openModel.long }}</p>
+
+          <div style="margin-top:18px;padding:13px 15px;border-radius:12px;background:#0e1016;border:1px solid #23283a;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#6b7181;margin-bottom:7px;">{{ openModel.formulaLbl }}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.55;color:{{ openModel.accent }};word-break:break-word;">{{ openModel.formula }}</div>
+          </div>
+
+          <div style="margin-top:16px;display:flex;gap:8px;align-items:baseline;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b7181;">▸ {{ openModel.idealForLbl }}:</span>
+            <span style="font-size:12.5px;color:#a9adba;">{{ openModel.use }}</span>
+          </div>
+
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#6b7181;margin:22px 0 12px;">{{ openModel.hparamsLbl }}</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <sc-for list="{{ openModel.hparams }}" as="hp" hint-placeholder-count="5">
+              <div style="padding:11px 13px;border-radius:11px;background:#181b23;border:1px solid #262b38;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;color:{{ openModel.accent }};">{{ hp.n }}</span>
+                  <span style="{{ hp.defStyle }}">{{ hp.def }}</span>
+                </div>
+                <div style="margin-top:5px;font-size:12px;line-height:1.5;color:#9aa0ae;text-wrap:pretty;">{{ hp.d }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'supervisado', open: null, phase: 0, lang: 'es', mode: 'anim', pgParams: {} };
+  rootRef = React.createRef();
+  modalRef = React.createRef();
+  _c = {};
+
+  CATS = [
+    { id: 'supervisado',   label: 'Supervisado',       n: 9 },
+    { id: 'nosupervisado', label: 'No supervisado',    n: 7 },
+    { id: 'series',        label: 'Series temporales', n: 3 },
+    { id: 'redes',         label: 'Redes neuronales',  n: 7 },
+  ];
+
+  LABELS = {
+    es: {
+      kicker: "Machine Learning",
+      title: "Explorador visual de modelos",
+      intro: "Cada tarjeta anima cómo funciona el modelo. Pincha cualquiera para ver el paso a paso, la explicación a fondo y sus hiperparámetros.",
+      howLive: "Cómo funciona · live", steps: "Paso a paso", what: "Qué hace",
+      formula: "Formulación", idealFor: "ideal para", hparams: "Hiperparámetros",
+      clickHint: "click → paso a paso", hpUnit: "hiperpar.", animTab: "Animación", pgTab: "Playground", controlsLbl: "Controles", pgLive: "Playground · en vivo", pgMetricLbl: "resultado",
+      cats: { supervisado: "Supervisado", nosupervisado: "No supervisado", series: "Series temporales", redes: "Redes neuronales" }
+    },
+    en: {
+      kicker: "Machine Learning",
+      title: "Visual model explorer",
+      intro: "Each card animates how the model works. Click any to open its step-by-step, in-depth explanation and hyperparameters.",
+      howLive: "How it works · live", steps: "Step by step", what: "What it does",
+      formula: "Formulation", idealFor: "best for", hparams: "Hyperparameters",
+      clickHint: "click → step by step", hpUnit: "hyperparams", animTab: "Animation", pgTab: "Playground", controlsLbl: "Controls", pgLive: "Playground · live", pgMetricLbl: "result",
+      cats: { supervisado: "Supervised", nosupervisado: "Unsupervised", series: "Time series", redes: "Neural networks" }
+    }
+  };
+
+  MODELS = [
+    // ---------- SUPERVISADO ----------
+    { id:"linreg", tab:"supervisado", accent:"#5b8ef0", anim:"linreg",
+      name:"Regresión Lineal", sub:"linear regression · OLS",
+      cat:{es:"Regresión", en:"Regression"},
+      desc:{es:"Ajusta la recta (o hiperplano) que minimiza el error cuadrático entre predicción y realidad.", en:"Fits the line (or hyperplane) that minimizes the squared error between prediction and reality."},
+      long:{es:"Modela la variable objetivo como una combinación lineal de las features. Estima los coeficientes que minimizan la suma de los errores al cuadrado (mínimos cuadrados ordinarios), lo que tiene solución cerrada mediante la ecuación normal o iterativa por descenso de gradiente. Es el modelo más interpretable — cada coeficiente indica cuánto cambia la predicción por unidad de la feature — y sirve de baseline en casi cualquier problema de regresión. Sus supuestos (linealidad, errores independientes de varianza constante y sin colinealidad fuerte) conviene revisarlos; cuando fallan, las variantes Ridge (L2) y Lasso (L1) añaden regularización.", en:"Models the target as a linear combination of the features. It estimates the coefficients that minimize the sum of squared errors (ordinary least squares), which has a closed-form solution via the normal equation or can be solved iteratively by gradient descent. It is the most interpretable model — each coefficient tells you how much the prediction changes per unit of the feature — and serves as a baseline for almost any regression problem. Its assumptions (linearity, independent constant-variance errors, no strong collinearity) are worth checking; when they break, the Ridge (L2) and Lasso (L1) variants add regularization."},
+      formula:"ŷ = β₀ + β₁x₁ + … + βₚxₚ",
+      use:{es:"relaciones lineales, baseline interpretable", en:"linear relationships, interpretable baseline"},
+      chips:["fit_intercept","positive","copy_X"],
+      steps:[
+        {t:{es:"Datos y objetivo", en:"Data and target"}, d:{es:"Cada observación aporta unas features x y un valor real y que queremos predecir.", en:"Each observation provides features x and a real target y we want to predict."}},
+        {t:{es:"Proponer una recta", en:"Propose a line"}, d:{es:"Se parte de una recta ŷ = β₀ + β₁x con coeficientes iniciales cualesquiera.", en:"Start from a line ŷ = β₀ + β₁x with arbitrary initial coefficients."}},
+        {t:{es:"Medir residuos", en:"Measure residuals"}, d:{es:"El residuo es la distancia vertical entre cada punto y la recta: el error de esa predicción.", en:"The residual is the vertical distance from each point to the line: that prediction's error."}},
+        {t:{es:"Minimizar Σ residuos²", en:"Minimize Σ residuals²"}, d:{es:"Se buscan los β que minimizan la suma de residuos al cuadrado, por ecuación normal o descenso de gradiente.", en:"Find the β that minimize the sum of squared residuals, via the normal equation or gradient descent."}}
+      ],
+      hparams:[
+        {n:"fit_intercept", def:"True", d:{es:"Si estima el término independiente β₀. Desactívalo solo si tus datos ya están centrados.", en:"Whether to estimate the intercept β₀. Disable only if your data is already centered."}},
+        {n:"positive", def:"False", d:{es:"Fuerza que todos los coeficientes sean ≥ 0, útil cuando el signo debe ser físicamente positivo.", en:"Forces all coefficients to be ≥ 0, useful when the sign must be physically positive."}},
+        {n:"alpha (Ridge/Lasso)", def:"1.0", d:{es:"Fuerza de la regularización L2/L1 en variantes penalizadas: más alpha → coeficientes más pequeños y menos sobreajuste.", en:"Strength of L2/L1 regularization in penalized variants: higher alpha → smaller coefficients and less overfitting."}},
+        {n:"copy_X", def:"True", d:{es:"Copia la matriz de features en vez de sobrescribirla en memoria.", en:"Copies the feature matrix instead of overwriting it in memory."}}
+      ]},
+    { id:"logistic", tab:"supervisado", accent:"#b57bff", anim:"logistic",
+      name:"Regresión Logística", sub:"logistic regression · sigmoide",
+      cat:{es:"Clasificación", en:"Classification"},
+      desc:{es:"Pasa una combinación lineal por una sigmoide para estimar la probabilidad de pertenecer a una clase.", en:"Passes a linear combination through a sigmoid to estimate the probability of belonging to a class."},
+      long:{es:"A pesar del nombre es un clasificador. Calcula una puntuación lineal de las features y la comprime con la función logística (sigmoide) a un valor entre 0 y 1 interpretable como probabilidad; por encima del umbral (0.5 por defecto) asigna la clase positiva. Se entrena maximizando la verosimilitud, es decir minimizando la entropía cruzada (log-loss), un problema convexo con solución estable. Da salidas probabilísticas calibrables y coeficientes interpretables como log-odds, y con regularización L1/L2 controla el sobreajuste y hace selección de variables. Se extiende a multiclase mediante softmax.", en:"Despite the name it is a classifier. It computes a linear score from the features and squashes it with the logistic (sigmoid) function into a value between 0 and 1 read as a probability; above the threshold (0.5 by default) it assigns the positive class. It is trained by maximizing likelihood, i.e. minimizing cross-entropy (log-loss), a convex problem with a stable solution. It gives calibratable probabilistic outputs and coefficients interpretable as log-odds, and with L1/L2 regularization it controls overfitting and performs feature selection. It extends to multiclass via softmax."},
+      formula:"p = 1 / (1 + e^−(β₀ + βᵀx))",
+      use:{es:"clasificación binaria, salida probabilística", en:"binary classification, probabilistic output"},
+      chips:["C","penalty","solver"],
+      steps:[
+        {t:{es:"Puntuación lineal", en:"Linear score"}, d:{es:"Combina las features en una puntuación lineal z = β₀ + βᵀx (los log-odds).", en:"Combines the features into a linear score z = β₀ + βᵀx (the log-odds)."}},
+        {t:{es:"Sigmoide", en:"Sigmoid"}, d:{es:"La sigmoide σ(z) comprime esa puntuación a una probabilidad entre 0 y 1.", en:"The sigmoid σ(z) squashes that score into a probability between 0 and 1."}},
+        {t:{es:"Umbral de decisión", en:"Decision threshold"}, d:{es:"Si la probabilidad supera el umbral (0.5 por defecto) se asigna la clase positiva.", en:"If the probability exceeds the threshold (0.5 by default) the positive class is assigned."}},
+        {t:{es:"Optimizar log-loss", en:"Optimize log-loss"}, d:{es:"Se ajustan los β minimizando la entropía cruzada (log-loss), equivalente a maximizar la verosimilitud.", en:"The β are fit by minimizing cross-entropy (log-loss), equivalent to maximizing likelihood."}}
+      ],
+      hparams:[
+        {n:"C", def:"1.0", d:{es:"Inverso de la regularización: C alto = poca regularización (riesgo de sobreajuste); C bajo = coeficientes más suaves.", en:"Inverse of regularization: high C = little regularization (overfitting risk); low C = smoother coefficients."}},
+        {n:"penalty", def:"'l2'", d:{es:"Tipo de penalización: l2 (por defecto), l1 (selección de variables), elasticnet o none.", en:"Penalty type: l2 (default), l1 (feature selection), elasticnet or none."}},
+        {n:"solver", def:"'lbfgs'", d:{es:"Algoritmo de optimización: lbfgs, liblinear (datasets pequeños/L1), saga (grandes y elasticnet).", en:"Optimization algorithm: lbfgs, liblinear (small datasets/L1), saga (large data and elasticnet)."}},
+        {n:"class_weight", def:"None", d:{es:"Reponderar clases; 'balanced' compensa clases desbalanceadas.", en:"Re-weight classes; 'balanced' compensates for imbalanced classes."}},
+        {n:"max_iter", def:"100", d:{es:"Iteraciones máximas del optimizador; súbelo si no converge.", en:"Maximum optimizer iterations; raise it if it does not converge."}}
+      ]},
+    { id:"naivebayes", tab:"supervisado", accent:"#b57bff", anim:"naivebayes",
+      name:"Naive Bayes", sub:"clasificador bayesiano",
+      cat:{es:"Clasificación", en:"Classification"},
+      desc:{es:"Aplica el teorema de Bayes asumiendo independencia entre features: rápido y sorprendentemente competitivo.", en:"Applies Bayes theorem assuming feature independence: fast and surprisingly competitive."},
+      long:{es:"Estima la probabilidad posterior de cada clase combinando su prior con la verosimilitud de las features, que asume condicionalmente independientes dada la clase (de ahí lo naive). Esa simplificación reduce el número de parámetros drásticamente, por lo que entrena en una sola pasada y funciona muy bien en alta dimensión y con pocos datos. Según la naturaleza de las features se usa la variante gaussiana (continuas), multinomial (conteos, texto) o Bernoulli (binarias). Aunque sus probabilidades suelen estar mal calibradas, su argmax acierta a menudo, y por eso sigue siendo un baseline excelente en clasificación de texto y filtros de spam.", en:"Estimates the posterior probability of each class by combining its prior with the likelihood of the features, which it assumes conditionally independent given the class (hence naive). That simplification cuts the parameter count drastically, so it trains in a single pass and works very well in high dimensions and with little data. Depending on the feature type you use the Gaussian (continuous), multinomial (counts, text) or Bernoulli (binary) variant. Although its probabilities are often poorly calibrated, its argmax is frequently right, which keeps it an excellent baseline for text classification and spam filters."},
+      formula:"P(y|x) ∝ P(y) · ∏ᵢ P(xᵢ|y)",
+      use:{es:"clasificación de texto, spam, alta dimensión", en:"text classification, spam, high dimensionality"},
+      chips:["var_smoothing","alpha","priors"],
+      steps:[
+        {t:{es:"Estimar priors", en:"Estimate priors"}, d:{es:"Se calcula P(y), la probabilidad a priori de cada clase según su frecuencia.", en:"Compute P(y), each class's prior probability from its frequency."}},
+        {t:{es:"Verosimilitud por feature", en:"Per-feature likelihood"}, d:{es:"Para cada feature se estima P(xᵢ|y) con la distribución asumida (gaussiana, multinomial…).", en:"For each feature estimate P(xᵢ|y) with the assumed distribution (gaussian, multinomial…)."}},
+        {t:{es:"Multiplicar (independencia)", en:"Multiply (independence)"}, d:{es:"Asumiendo independencia condicional, se multiplican todas las P(xᵢ|y) por el prior.", en:"Assuming conditional independence, multiply all P(xᵢ|y) by the prior."}},
+        {t:{es:"Elegir argmax", en:"Pick the argmax"}, d:{es:"Se predice la clase con mayor probabilidad posterior (no hace falta normalizar).", en:"Predict the class with the highest posterior probability (no need to normalize)."}}
+      ],
+      hparams:[
+        {n:"var_smoothing", def:"1e-9", d:{es:"(GaussianNB) Estabiliza varianzas pequeñas añadiendo una fracción de la varianza máxima.", en:"(GaussianNB) Stabilizes small variances by adding a fraction of the largest variance."}},
+        {n:"alpha", def:"1.0", d:{es:"(Multinomial/Bernoulli) Suavizado de Laplace/Lidstone para evitar probabilidades cero.", en:"(Multinomial/Bernoulli) Laplace/Lidstone smoothing to avoid zero probabilities."}},
+        {n:"fit_prior", def:"True", d:{es:"Si aprende los priors de clase de los datos o los asume uniformes.", en:"Whether to learn class priors from data or assume them uniform."}},
+        {n:"class_prior", def:"None", d:{es:"Priors de clase fijados manualmente en vez de estimados.", en:"Class priors set manually instead of estimated."}}
+      ]},
+    { id:"svm", tab:"supervisado", accent:"#b57bff", anim:"svm",
+      name:"Support Vector Machine", sub:"SVM · máximo margen",
+      cat:{es:"Clasificación", en:"Classification"},
+      desc:{es:"Busca el hiperplano que separa las clases con el mayor margen posible; solo cuentan los vectores soporte.", en:"Finds the hyperplane that separates the classes with the widest possible margin; only support vectors matter."},
+      long:{es:"Encuentra la frontera de decisión que maximiza la distancia (margen) a los puntos más cercanos de cada clase, llamados vectores soporte, que son los únicos que definen la solución. Este criterio de máximo margen mejora la generalización. El parámetro C regula el equilibrio entre un margen ancho y tolerar errores de clasificación (margen blando). Mediante el truco del kernel proyecta implícitamente los datos a un espacio de mayor dimensión, permitiendo fronteras no lineales (RBF, polinómico) sin calcular esa proyección. Es muy eficaz en datasets de tamaño medio y alta dimensión, aunque escala mal con muchísimos ejemplos y no da probabilidades de forma nativa.", en:"Finds the decision boundary that maximizes the distance (margin) to the nearest points of each class, called support vectors, which are the only ones that define the solution. This max-margin criterion improves generalization. The C parameter controls the trade-off between a wide margin and tolerating misclassifications (soft margin). Through the kernel trick it implicitly projects the data into a higher-dimensional space, enabling non-linear boundaries (RBF, polynomial) without computing that projection. It is very effective on medium-sized, high-dimensional datasets, though it scales poorly to huge sample counts and does not output probabilities natively."},
+      formula:"min ½‖w‖²  s.a.  yᵢ(wᵀxᵢ + b) ≥ 1",
+      use:{es:"márgenes claros, datasets medianos, no lineal con kernel", en:"clear margins, medium datasets, non-linear with a kernel"},
+      chips:["C","kernel","gamma"],
+      steps:[
+        {t:{es:"Dos clases", en:"Two classes"}, d:{es:"Puntos etiquetados de dos clases situados en el espacio de features.", en:"Labelled points of two classes placed in feature space."}},
+        {t:{es:"Buscar el hiperplano", en:"Search a hyperplane"}, d:{es:"Existen infinitas fronteras que separan las clases; se busca la óptima.", en:"Infinitely many boundaries separate the classes; we look for the optimal one."}},
+        {t:{es:"Maximizar el margen", en:"Maximize the margin"}, d:{es:"Se elige el hiperplano que deja el mayor margen a los puntos más cercanos.", en:"Pick the hyperplane leaving the widest margin to the nearest points."}},
+        {t:{es:"Vectores soporte", en:"Support vectors"}, d:{es:"Solo los puntos sobre el margen (vectores soporte) definen la solución; con kernel se calcula en un espacio superior.", en:"Only the points on the margin (support vectors) define the solution; with a kernel it is computed in a higher space."}}
+      ],
+      hparams:[
+        {n:"C", def:"1.0", d:{es:"Compromiso margen/errores: C alto castiga errores (margen estrecho, riesgo sobreajuste); C bajo tolera errores.", en:"Margin/error trade-off: high C penalizes errors (narrow margin, overfit risk); low C tolerates errors."}},
+        {n:"kernel", def:"'rbf'", d:{es:"Transformación: linear, poly, rbf (gaussiano, por defecto) o sigmoid para fronteras no lineales.", en:"Transformation: linear, poly, rbf (gaussian, default) or sigmoid for non-linear boundaries."}},
+        {n:"gamma", def:"'scale'", d:{es:"Alcance de un punto en kernels rbf/poly: alto = fronteras muy locales/curvas, bajo = suaves.", en:"Reach of a point in rbf/poly kernels: high = very local/curvy boundaries, low = smooth."}},
+        {n:"degree", def:"3", d:{es:"Grado del kernel polinómico (solo poly).", en:"Degree of the polynomial kernel (poly only)."}},
+        {n:"class_weight", def:"None", d:{es:"'balanced' ajusta C por clase para datos desbalanceados.", en:"'balanced' adjusts C per class for imbalanced data."}}
+      ]},
+    { id:"tree", tab:"supervisado", accent:"#b57bff", anim:"tree",
+      name:"Decision Tree", sub:"árbol de decisión",
+      cat:{es:"Árbol · clasif+regr", en:"Tree · classif+regr"},
+      desc:{es:"Parte el espacio con reglas si/no que maximizan la pureza de cada rama. Muy interpretable.", en:"Splits the space with yes/no rules that maximize each branch's purity. Highly interpretable."},
+      long:{es:"Divide recursivamente los datos con umbrales sobre una feature, eligiendo en cada nodo el corte que más reduce la impureza (índice de Gini o entropía en clasificación, error cuadrático en regresión). El proceso continúa hasta cumplir un criterio de parada, y las hojas resultantes dan la predicción por clase mayoritaria o media. Su gran ventaja es la interpretabilidad: el camino de decisiones se lee como reglas de negocio, maneja features numéricas y categóricas y no necesita escalado. Su debilidad es la alta varianza — árboles profundos sobreajustan y son inestables ante pequeños cambios — por eso se podan o se combinan en ensembles (Random Forest, boosting).", en:"Recursively splits the data with thresholds on a feature, choosing at each node the cut that most reduces impurity (Gini index or entropy for classification, squared error for regression). The process continues until a stopping criterion is met, and the resulting leaves predict by majority class or mean. Its great strength is interpretability: the decision path reads as business rules, it handles numeric and categorical features and needs no scaling. Its weakness is high variance — deep trees overfit and are unstable to small changes — which is why they are pruned or combined into ensembles (Random Forest, boosting)."},
+      formula:"split* = argmax ΔImpureza (Gini o Entropía)",
+      use:{es:"reglas interpretables, mezcla de tipos de datos", en:"interpretable rules, mixed data types"},
+      chips:["max_depth","min_samples_leaf","criterion"],
+      steps:[
+        {t:{es:"Nodo raíz", en:"Root node"}, d:{es:"Todos los datos empiezan juntos en el nodo raíz.", en:"All the data starts together at the root node."}},
+        {t:{es:"Mejor corte", en:"Best split"}, d:{es:"Se prueba cada feature y umbral y se elige el que más reduce la impureza (Gini/entropía).", en:"Each feature and threshold is tried, picking the one that most reduces impurity (Gini/entropy)."}},
+        {t:{es:"Recursión", en:"Recursion"}, d:{es:"El corte divide los datos en dos y el proceso se repite en cada sub-región.", en:"The split divides the data in two and the process repeats in each sub-region."}},
+        {t:{es:"Hojas", en:"Leaves"}, d:{es:"Al alcanzar el criterio de parada, cada hoja predice por clase mayoritaria o media.", en:"When the stopping criterion is met, each leaf predicts by majority class or mean."}}
+      ],
+      hparams:[
+        {n:"max_depth", def:"None", d:{es:"Profundidad máxima; limitarla es el principal freno al sobreajuste.", en:"Maximum depth; limiting it is the main brake on overfitting."}},
+        {n:"min_samples_split", def:"2", d:{es:"Muestras mínimas para poder dividir un nodo.", en:"Minimum samples required to split a node."}},
+        {n:"min_samples_leaf", def:"1", d:{es:"Muestras mínimas en una hoja; valores altos suavizan el modelo.", en:"Minimum samples in a leaf; higher values smooth the model."}},
+        {n:"criterion", def:"'gini'", d:{es:"Medida de impureza: gini o entropy (clasif.); squared_error (regr.).", en:"Impurity measure: gini or entropy (classif.); squared_error (regr.)."}},
+        {n:"max_features", def:"None", d:{es:"Número de features consideradas por corte.", en:"Number of features considered per split."}}
+      ]},
+    { id:"forest", tab:"supervisado", accent:"#b57bff", anim:"forest",
+      name:"Random Forest", sub:"bosque aleatorio",
+      cat:{es:"Ensemble · bagging", en:"Ensemble · bagging"},
+      desc:{es:"Promedia cientos de árboles entrenados sobre muestras y features aleatorias: robusto y sin apenas tuning.", en:"Averages hundreds of trees trained on random samples and features: robust with barely any tuning."},
+      long:{es:"Entrena muchos árboles de decisión, cada uno sobre un remuestreo bootstrap de las filas y considerando en cada corte solo un subconjunto aleatorio de features. Esa doble aleatoriedad decorrelaciona los árboles, y al agregar sus votos (clasificación) o promediar sus salidas (regresión) la varianza del conjunto cae mucho sin aumentar el sesgo. El resultado es un modelo muy robusto que apenas sobreajusta al añadir árboles, funciona de fábrica en datos tabulares y ofrece importancia de features y error out-of-bag gratis. A cambio pierde la interpretabilidad de un árbol único y es más pesado en memoria y en predicción.", en:"Trains many decision trees, each on a bootstrap resample of the rows and considering only a random subset of features at every split. That double randomness decorrelates the trees, and aggregating their votes (classification) or averaging their outputs (regression) sharply lowers the ensemble variance without raising bias. The result is a very robust model that barely overfits as you add trees, works out of the box on tabular data and gives feature importance and out-of-bag error for free. In exchange it loses the interpretability of a single tree and is heavier in memory and at prediction time."},
+      formula:"ŷ = agg{ Tᵦ(x) },  b = 1…B  (voto / media)",
+      use:{es:"baseline potente, tabular, poco tuning", en:"strong baseline, tabular data, little tuning"},
+      chips:["n_estimators","max_features","max_depth"],
+      steps:[
+        {t:{es:"Bootstrap", en:"Bootstrap"}, d:{es:"Cada árbol se entrena sobre un remuestreo aleatorio con reemplazo de las filas.", en:"Each tree is trained on a random resample-with-replacement of the rows."}},
+        {t:{es:"Features aleatorias", en:"Random features"}, d:{es:"En cada corte solo se considera un subconjunto aleatorio de features, decorrelacionando los árboles.", en:"At each split only a random subset of features is considered, decorrelating the trees."}},
+        {t:{es:"Muchos árboles", en:"Many trees"}, d:{es:"Se crecen cientos de árboles independientes y diversos.", en:"Hundreds of independent, diverse trees are grown."}},
+        {t:{es:"Agregar votos", en:"Aggregate votes"}, d:{es:"La predicción final es el voto mayoritario (clasificación) o la media (regresión) de todos los árboles.", en:"The final prediction is the majority vote (classification) or the mean (regression) of all trees."}}
+      ],
+      hparams:[
+        {n:"n_estimators", def:"100", d:{es:"Número de árboles; más = más estable pero más lento (no sobreajusta al subir).", en:"Number of trees; more = more stable but slower (does not overfit as it grows)."}},
+        {n:"max_features", def:"'sqrt'", d:{es:"Features candidatas por corte; controla la decorrelación entre árboles.", en:"Candidate features per split; controls decorrelation between trees."}},
+        {n:"max_depth", def:"None", d:{es:"Profundidad de cada árbol; limitar reduce varianza.", en:"Depth of each tree; limiting reduces variance."}},
+        {n:"min_samples_leaf", def:"1", d:{es:"Tamaño mínimo de hoja; súbelo para regularizar.", en:"Minimum leaf size; raise it to regularize."}},
+        {n:"bootstrap", def:"True", d:{es:"Si usa remuestreo con reemplazo (permite estimar el error OOB).", en:"Whether to resample with replacement (enables OOB error estimation)."}}
+      ]},
+    { id:"gboost", tab:"supervisado", accent:"#b57bff", anim:"gboost",
+      name:"Gradient Boosting", sub:"boosting secuencial",
+      cat:{es:"Ensemble · boosting", en:"Ensemble · boosting"},
+      desc:{es:"Suma árboles pequeños uno a uno; cada nuevo corrige los errores (residuos) del conjunto anterior.", en:"Adds small trees one by one; each new one corrects the errors (residuals) of the previous ensemble."},
+      long:{es:"Construye el modelo por etapas de forma aditiva: empieza con una predicción constante y en cada iteración ajusta un árbol débil al gradiente negativo de la función de pérdida (los residuos del ensemble acumulado), añadiéndolo escalado por una tasa de aprendizaje. Al enfocarse repetidamente en lo que aún falla, alcanza una precisión muy alta en datos tabulares. El precio es la sensibilidad al tuning y al sobreajuste: hay que equilibrar learning_rate, número de árboles y profundidad, y ayuda regularizar con submuestreo. Es la base conceptual de XGBoost, LightGBM y CatBoost.", en:"Builds the model additively in stages: it starts from a constant prediction and, at each iteration, fits a weak tree to the negative gradient of the loss (the residuals of the accumulated ensemble), adding it scaled by a learning rate. By repeatedly focusing on what still fails, it reaches very high accuracy on tabular data. The price is sensitivity to tuning and overfitting: you must balance learning_rate, number of trees and depth, and regularizing with subsampling helps. It is the conceptual basis of XGBoost, LightGBM and CatBoost."},
+      formula:"Fₘ(x) = Fₘ₋₁(x) + η · hₘ(x)",
+      use:{es:"máxima precisión en tabular, competiciones", en:"top accuracy on tabular data, competitions"},
+      chips:["learning_rate","n_estimators","max_depth"],
+      steps:[
+        {t:{es:"Predicción inicial", en:"Initial prediction"}, d:{es:"Se parte de una predicción constante, normalmente la media del objetivo.", en:"Start from a constant prediction, usually the target's mean."}},
+        {t:{es:"Calcular residuos", en:"Compute residuals"}, d:{es:"Se calcula el error (gradiente de la pérdida) que el ensemble aún no explica.", en:"Compute the error (loss gradient) the ensemble does not yet explain."}},
+        {t:{es:"Ajustar un árbol al residuo", en:"Fit a tree to the residual"}, d:{es:"Un árbol débil y poco profundo se entrena para predecir ese residuo.", en:"A shallow weak tree is trained to predict that residual."}},
+        {t:{es:"Sumar con learning rate", en:"Add with learning rate"}, d:{es:"El árbol se añade al ensemble escalado por la learning rate; se repite el ciclo.", en:"The tree is added to the ensemble scaled by the learning rate; the cycle repeats."}}
+      ],
+      hparams:[
+        {n:"learning_rate", def:"0.1", d:{es:"Cuánto contribuye cada árbol; bajo = mejor generalización pero necesita más árboles.", en:"How much each tree contributes; low = better generalization but needs more trees."}},
+        {n:"n_estimators", def:"100", d:{es:"Número de etapas/árboles; se equilibra con learning_rate.", en:"Number of stages/trees; balanced against learning_rate."}},
+        {n:"max_depth", def:"3", d:{es:"Profundidad de cada árbol débil; suele ser baja (2–5).", en:"Depth of each weak tree; usually low (2–5)."}},
+        {n:"subsample", def:"1.0", d:{es:"Fracción de filas por etapa (<1 = stochastic boosting, regulariza).", en:"Fraction of rows per stage (<1 = stochastic boosting, regularizes)."}},
+        {n:"min_samples_leaf", def:"1", d:{es:"Tamaño mínimo de hoja para controlar el ruido.", en:"Minimum leaf size to control noise."}}
+      ]},
+    { id:"lightgbm", tab:"supervisado", accent:"#5b8ef0", anim:"lightgbm",
+      name:"LightGBM", sub:"gradient boosting · leaf-wise",
+      cat:{es:"Ensemble · boosting", en:"Ensemble · boosting"},
+      desc:{es:"Boosting de Microsoft que crece los árboles por hoja y binea las features en histogramas: rapidísimo en datos grandes.", en:"Microsoft's boosting that grows trees leaf-wise and bins features into histograms: extremely fast on large data."},
+      long:{es:"Variante de gradient boosting optimizada para velocidad y escala. Discretiza cada feature en histogramas de bins, lo que acelera enormemente la búsqueda del mejor corte y reduce la memoria. Además crece los árboles leaf-wise (expande primero la hoja de mayor ganancia) en vez de nivel a nivel, logrando más precisión con menos nodos aunque con más riesgo de sobreajuste, controlado por num_leaves y min_child_samples. Incorpora GOSS y EFB para acelerar aún más y maneja categóricas de forma nativa. Es de los favoritos para datos tabulares grandes y competiciones cuando importa el tiempo de entrenamiento.", en:"A gradient boosting variant optimized for speed and scale. It discretizes each feature into histogram bins, which massively speeds up the search for the best split and cuts memory. It also grows trees leaf-wise (expanding the highest-gain leaf first) rather than level by level, achieving more accuracy with fewer nodes though with higher overfitting risk, controlled by num_leaves and min_child_samples. It adds GOSS and EFB to go even faster and handles categorical features natively. It is a favorite for large tabular data and competitions when training time matters."},
+      formula:"Fₘ = Fₘ₋₁ + η·hₘ   ·   split por histograma, leaf-wise",
+      use:{es:"tabular grande, velocidad, competiciones", en:"large tabular data, speed, competitions"},
+      chips:["num_leaves","learning_rate","n_estimators"],
+      steps:[
+        {t:{es:"Binning por histograma", en:"Histogram binning"}, d:{es:"Cada feature continua se discretiza en bins de un histograma para acelerar la búsqueda de cortes.", en:"Each continuous feature is discretized into histogram bins to speed up split search."}},
+        {t:{es:"Crecimiento leaf-wise", en:"Leaf-wise growth"}, d:{es:"En vez de por niveles, se expande la hoja con mayor ganancia, logrando árboles más precisos.", en:"Instead of level by level, the highest-gain leaf is expanded, yielding more accurate trees."}},
+        {t:{es:"Sumar al ensemble", en:"Add to the ensemble"}, d:{es:"Cada nuevo árbol ajusta el gradiente del error y se añade al modelo.", en:"Each new tree fits the error gradient and is added to the model."}},
+        {t:{es:"Regularizar", en:"Regularize"}, d:{es:"num_leaves y min_child_samples limitan el crecimiento para no sobreajustar.", en:"num_leaves and min_child_samples limit growth to avoid overfitting."}}
+      ],
+      hparams:[
+        {n:"num_leaves", def:"31", d:{es:"Complejidad del árbol (leaf-wise); el más importante — demasiado alto sobreajusta.", en:"Tree complexity (leaf-wise); the most important — too high overfits."}},
+        {n:"learning_rate", def:"0.1", d:{es:"Contribución de cada árbol; bájalo y sube n_estimators para más precisión.", en:"Each tree's contribution; lower it and raise n_estimators for more accuracy."}},
+        {n:"n_estimators", def:"100", d:{es:"Número de árboles de boosting.", en:"Number of boosting trees."}},
+        {n:"max_depth", def:"-1", d:{es:"Límite de profundidad (-1 = sin límite); útil junto a num_leaves.", en:"Depth limit (-1 = no limit); useful alongside num_leaves."}},
+        {n:"min_child_samples", def:"20", d:{es:"Datos mínimos por hoja; regulariza en datos ruidosos.", en:"Minimum data per leaf; regularizes on noisy data."}},
+        {n:"feature_fraction", def:"1.0", d:{es:"Fracción de features por árbol (submuestreo de columnas).", en:"Fraction of features per tree (column subsampling)."}}
+      ]},
+    { id:"xgboost", tab:"supervisado", accent:"#5b8ef0", anim:"xgboost",
+      name:"XGBoost", sub:"extreme gradient boosting",
+      cat:{es:"Ensemble · boosting", en:"Ensemble · boosting"},
+      desc:{es:"Boosting regularizado y muy optimizado: añade árboles con penalización de complejidad para ganar robustez.", en:"Regularized, heavily optimized boosting: adds trees with a complexity penalty for extra robustness."},
+      long:{es:"Es gradient boosting con regularización explícita y numerosas optimizaciones de sistema. Su objetivo suma a la pérdida un término Ω que penaliza el número de hojas y la magnitud de sus pesos (L1 y L2), y usa una aproximación de segundo orden (gradiente y hessiano) para elegir cortes de máxima ganancia, podando los que no superan un umbral γ. A esto añade shrinkage, submuestreo de filas y columnas, manejo de valores faltantes y cómputo paralelo por bloques. El resultado es un modelo muy preciso y con control fino del sobreajuste, uno de los algoritmos más usados en competiciones y producción sobre datos tabulares.", en:"It is gradient boosting with explicit regularization and many system optimizations. Its objective adds to the loss a term Ω that penalizes the number of leaves and the magnitude of their weights (L1 and L2), and it uses a second-order approximation (gradient and hessian) to pick maximum-gain splits, pruning those that fall below a threshold γ. On top of this it adds shrinkage, row and column subsampling, missing-value handling and block-parallel computation. The result is a very accurate model with fine control over overfitting, one of the most used algorithms in competitions and production on tabular data."},
+      formula:"obj = Σ l(y,ŷ) + Σₖ Ω(fₖ),  Ω = γT + ½λ‖w‖²",
+      use:{es:"tabular, precisión con control de overfitting", en:"tabular data, accuracy with overfitting control"},
+      chips:["eta","max_depth","lambda"],
+      steps:[
+        {t:{es:"Objetivo regularizado", en:"Regularized objective"}, d:{es:"El objetivo suma la pérdida y un término Ω que penaliza muchas hojas y pesos grandes.", en:"The objective sums the loss and a term Ω penalizing many leaves and large weights."}},
+        {t:{es:"Añadir árbol", en:"Add a tree"}, d:{es:"Con gradiente y hessiano (2º orden) se elige el corte de máxima ganancia.", en:"Using the gradient and hessian (2nd order) the maximum-gain split is chosen."}},
+        {t:{es:"Podar por ganancia", en:"Prune by gain"}, d:{es:"Los cortes cuya ganancia no supera γ se podan por complejidad.", en:"Splits whose gain does not exceed γ are pruned for complexity."}},
+        {t:{es:"Shrink y repetir", en:"Shrink and repeat"}, d:{es:"El árbol se escala por eta y se suma; el proceso se repite muchas rondas.", en:"The tree is scaled by eta and added; the process repeats for many rounds."}}
+      ],
+      hparams:[
+        {n:"eta (learning_rate)", def:"0.3", d:{es:"Tasa de aprendizaje; bájala (0.01–0.1) con más árboles para mejor generalización.", en:"Learning rate; lower it (0.01–0.1) with more trees for better generalization."}},
+        {n:"max_depth", def:"6", d:{es:"Profundidad de árbol; controla la interacción de features y el sobreajuste.", en:"Tree depth; controls feature interaction and overfitting."}},
+        {n:"lambda / alpha", def:"1 / 0", d:{es:"Regularización L2 (lambda) y L1 (alpha) sobre los pesos de las hojas.", en:"L2 (lambda) and L1 (alpha) regularization on the leaf weights."}},
+        {n:"gamma", def:"0", d:{es:"Ganancia mínima para hacer un corte (poda); más alto = más conservador.", en:"Minimum gain to make a split (pruning); higher = more conservative."}},
+        {n:"subsample", def:"1.0", d:{es:"Fracción de filas por árbol.", en:"Fraction of rows per tree."}},
+        {n:"colsample_bytree", def:"1.0", d:{es:"Fracción de columnas por árbol.", en:"Fraction of columns per tree."}}
+      ]},
+
+    // ---------- NO SUPERVISADO ----------
+    { id:"kmeans", tab:"nosupervisado", accent:"#b57bff", anim:"kmeans",
+      name:"K-Means", sub:"clustering por centroides",
+      cat:{es:"Clustering", en:"Clustering"},
+      desc:{es:"Agrupa en k clústeres alternando: asignar cada punto al centroide más cercano y recolocar centroides.", en:"Groups into k clusters by alternating: assign each point to the nearest centroid and reposition centroids."},
+      long:{es:"Particiona los datos en k grupos minimizando la inercia, es decir la suma de distancias al cuadrado de cada punto a su centroide. Itera dos pasos hasta converger: asignación (cada punto va a su centroide más cercano) y actualización (cada centroide pasa a ser la media de sus puntos). Es rápido, escalable y fácil de interpretar, pero exige fijar k de antemano (el codo o la silueta ayudan), asume clústeres esféricos de tamaño similar y es sensible a la escala de las features y a la inicialización, mitigada con k-means++. Puede caer en óptimos locales, por lo que se ejecuta varias veces.", en:"Partitions the data into k groups by minimizing inertia, i.e. the sum of squared distances from each point to its centroid. It iterates two steps until convergence: assignment (each point goes to its nearest centroid) and update (each centroid becomes the mean of its points). It is fast, scalable and easy to interpret, but requires fixing k in advance (the elbow or silhouette help), assumes roughly spherical, similar-sized clusters and is sensitive to feature scale and initialization, mitigated by k-means++. It can fall into local optima, so it is run several times."},
+      formula:"min Σₖ Σ_{x∈Cₖ} ‖x − μₖ‖²",
+      use:{es:"segmentación, k conocido, clústeres compactos", en:"segmentation, known k, compact clusters"},
+      chips:["n_clusters","init","n_init"],
+      steps:[
+        {t:{es:"Elegir k centroides", en:"Choose k centroids"}, d:{es:"Se inicializan k centroides, normalmente con k-means++ para dispersarlos.", en:"Initialize k centroids, usually with k-means++ to spread them out."}},
+        {t:{es:"Asignar", en:"Assign"}, d:{es:"Cada punto se asigna al centroide euclídeamente más cercano.", en:"Each point is assigned to the Euclidean-nearest centroid."}},
+        {t:{es:"Actualizar", en:"Update"}, d:{es:"Cada centroide se recoloca en la media de los puntos que le fueron asignados.", en:"Each centroid is moved to the mean of the points assigned to it."}},
+        {t:{es:"Repetir hasta converger", en:"Repeat to convergence"}, d:{es:"Se alternan asignar y actualizar hasta que los centroides dejan de moverse.", en:"Assign and update alternate until the centroids stop moving."}}
+      ],
+      hparams:[
+        {n:"n_clusters (k)", def:"8", d:{es:"Número de grupos; el parámetro crítico (usa el codo o la silueta para elegirlo).", en:"Number of groups; the critical parameter (use elbow or silhouette to choose)."}},
+        {n:"init", def:"'k-means++'", d:{es:"Estrategia de inicialización; k-means++ acelera y estabiliza la convergencia.", en:"Initialization strategy; k-means++ speeds up and stabilizes convergence."}},
+        {n:"n_init", def:"'auto'", d:{es:"Cuántas inicializaciones distintas prueba, quedándose con la mejor.", en:"How many different initializations it tries, keeping the best."}},
+        {n:"max_iter", def:"300", d:{es:"Iteraciones máximas por ejecución.", en:"Maximum iterations per run."}},
+        {n:"tol", def:"1e-4", d:{es:"Umbral de cambio para declarar convergencia.", en:"Change threshold to declare convergence."}}
+      ]},
+    { id:"kmedoids", tab:"nosupervisado", accent:"#b57bff", anim:"kmedoids",
+      name:"K-Medoids", sub:"PAM · centros reales",
+      cat:{es:"Clustering", en:"Clustering"},
+      desc:{es:"Como K-Means pero cada centro es un punto real de datos (medoide): robusto a outliers y a cualquier distancia.", en:"Like K-Means but each center is a real data point (medoid): robust to outliers and to any distance."},
+      long:{es:"Elige como representante de cada clúster un punto real de los datos —el medoide— que minimiza la suma de distancias al resto de su grupo. Al no promediar coordenadas, es mucho más robusto a outliers que K-Means y admite cualquier métrica de distancia (Manhattan, coseno o incluso una matriz precomputada), lo que lo hace útil con datos categóricos o no euclídeos. Se optimiza con algoritmos como PAM, que prueba intercambios medoide↔punto y acepta los que reducen el coste total. A cambio es más costoso computacionalmente que K-Means, por lo que se reserva para datasets no demasiado grandes.", en:"It picks as each cluster's representative a real data point —the medoid— that minimizes the sum of distances to the rest of its group. By not averaging coordinates, it is far more robust to outliers than K-Means and supports any distance metric (Manhattan, cosine or even a precomputed matrix), which makes it useful with categorical or non-Euclidean data. It is optimized with algorithms like PAM, which tries medoid↔point swaps and accepts those that reduce total cost. In exchange it is more computationally expensive than K-Means, so it is reserved for not-too-large datasets."},
+      formula:"min Σₖ Σ_{x∈Cₖ} d(x, medoidₖ),  medoid ∈ datos",
+      use:{es:"outliers, distancias no euclídeas, datos categóricos", en:"outliers, non-Euclidean distances, categorical data"},
+      chips:["n_clusters","metric","method"],
+      steps:[
+        {t:{es:"Elegir k medoides", en:"Choose k medoids"}, d:{es:"Se eligen k puntos reales de los datos como centros iniciales (medoides).", en:"Pick k real data points as initial centers (medoids)."}},
+        {t:{es:"Asignar por distancia", en:"Assign by distance"}, d:{es:"Cada punto se asigna al medoide más cercano según la métrica elegida.", en:"Each point is assigned to the nearest medoid under the chosen metric."}},
+        {t:{es:"Probar swaps", en:"Try swaps"}, d:{es:"Se prueban intercambios medoide↔punto y se aceptan los que reducen el coste total.", en:"Medoid↔point swaps are tried, accepting those that reduce the total cost."}},
+        {t:{es:"Converger", en:"Converge"}, d:{es:"Se repite hasta que ningún intercambio mejore la suma de distancias.", en:"Repeat until no swap improves the sum of distances."}}
+      ],
+      hparams:[
+        {n:"n_clusters (k)", def:"8", d:{es:"Número de medoides/grupos.", en:"Number of medoids/groups."}},
+        {n:"metric", def:"'euclidean'", d:{es:"Cualquier distancia: manhattan, coseno, o una matriz precomputada.", en:"Any distance: manhattan, cosine, or a precomputed matrix."}},
+        {n:"method", def:"'alternate'", d:{es:"Algoritmo de optimización: 'pam' (mejor calidad) o 'alternate' (más rápido).", en:"Optimization algorithm: 'pam' (better quality) or 'alternate' (faster)."}},
+        {n:"init", def:"'heuristic'", d:{es:"Selección inicial de medoides: random, heuristic, k-medoids++.", en:"Initial medoid selection: random, heuristic, k-medoids++."}},
+        {n:"max_iter", def:"300", d:{es:"Iteraciones máximas.", en:"Maximum iterations."}}
+      ]},
+    { id:"dbscan", tab:"nosupervisado", accent:"#5b8ef0", anim:"dbscan",
+      name:"DBSCAN", sub:"clustering por densidad",
+      cat:{es:"Clustering · densidad", en:"Clustering · density"},
+      desc:{es:"Forma clústeres donde hay densidad suficiente y marca como ruido los puntos aislados. No necesita fijar k.", en:"Forms clusters where density is sufficient and marks isolated points as noise. No need to fix k."},
+      long:{es:"Agrupa por densidad en vez de por distancia a un centro. Un punto es núcleo si tiene al menos minPts vecinos dentro de un radio eps; los núcleos conectados por densidad se encadenan formando clústeres de forma arbitraria, y los puntos que no alcanzan esa densidad se etiquetan como ruido. Sus grandes ventajas son que no requiere fijar el número de clústeres, detecta formas no convexas e identifica outliers de forma natural. Su punto débil es la elección de eps y minPts (el gráfico k-distance ayuda) y que sufre cuando los clústeres tienen densidades muy distintas, caso que resuelve mejor HDBSCAN.", en:"It groups by density rather than by distance to a center. A point is a core point if it has at least minPts neighbors within a radius eps; density-connected cores chain together into arbitrarily shaped clusters, and points that do not reach that density are labelled noise. Its big advantages are that it needs no preset number of clusters, detects non-convex shapes and identifies outliers naturally. Its weakness is choosing eps and minPts (the k-distance plot helps) and that it struggles when clusters have very different densities, a case better handled by HDBSCAN."},
+      formula:"core(p)  ⇔  |Nε(p)| ≥ minPts",
+      use:{es:"formas arbitrarias, detección de outliers, k desconocido", en:"arbitrary shapes, outlier detection, unknown k"},
+      chips:["eps","min_samples","metric"],
+      steps:[
+        {t:{es:"Definir vecindario", en:"Define neighborhood"}, d:{es:"Se fija un radio eps que define el vecindario de cada punto.", en:"A radius eps defines each point's neighborhood."}},
+        {t:{es:"Puntos núcleo", en:"Core points"}, d:{es:"Un punto con al menos minPts vecinos dentro de eps es un punto núcleo.", en:"A point with at least minPts neighbors within eps is a core point."}},
+        {t:{es:"Expandir clúster", en:"Expand cluster"}, d:{es:"Los núcleos alcanzables por densidad se encadenan formando un clúster.", en:"Density-reachable cores are chained together into a cluster."}},
+        {t:{es:"Marcar ruido", en:"Mark noise"}, d:{es:"Los puntos que no pertenecen a ningún clúster denso se etiquetan como ruido.", en:"Points not belonging to any dense cluster are labelled noise."}}
+      ],
+      hparams:[
+        {n:"eps", def:"0.5", d:{es:"Radio del vecindario; el parámetro clave (usa el gráfico k-distance para elegirlo).", en:"Neighborhood radius; the key parameter (use the k-distance plot to choose it)."}},
+        {n:"min_samples", def:"5", d:{es:"Vecinos mínimos para ser núcleo; más alto = más puntos considerados ruido.", en:"Minimum neighbors to be a core; higher = more points treated as noise."}},
+        {n:"metric", def:"'euclidean'", d:{es:"Distancia usada para el vecindario.", en:"Distance used for the neighborhood."}},
+        {n:"algorithm", def:"'auto'", d:{es:"Estructura de búsqueda de vecinos: ball_tree, kd_tree o brute.", en:"Neighbor-search structure: ball_tree, kd_tree or brute."}}
+      ]},
+    { id:"hdbscan", tab:"nosupervisado", accent:"#b57bff", anim:"hdbscan",
+      name:"HDBSCAN", sub:"DBSCAN jerárquico",
+      cat:{es:"Clustering · jerárquico", en:"Clustering · hierarchical"},
+      desc:{es:"Versión jerárquica de DBSCAN: detecta clústeres de densidad variable sin fijar un eps global.", en:"Hierarchical version of DBSCAN: detects clusters of varying density without fixing a global eps."},
+      long:{es:"Extiende DBSCAN a todas las escalas de densidad a la vez. Reescala las distancias con la distancia de alcanzabilidad mutua, construye un árbol de expansión mínima sobre ese grafo y, condensando la jerarquía resultante, extrae los clústeres más estables (los que persisten a lo largo de muchos niveles de densidad). Así evita el problema del eps único de DBSCAN y agrupa correctamente conjuntos con densidades muy distintas, dejando el resto como ruido. Solo hay que fijar min_cluster_size, es robusto en datos reales complejos y ofrece una medida de pertenencia/probabilidad por punto, a cambio de un coste algo mayor.", en:"It extends DBSCAN to all density scales at once. It rescales distances with the mutual reachability distance, builds a minimum spanning tree over that graph and, by condensing the resulting hierarchy, extracts the most stable clusters (those that persist across many density levels). This avoids DBSCAN's single-eps problem and correctly groups sets with very different densities, leaving the rest as noise. You only fix min_cluster_size, it is robust on complex real-world data and it provides a membership/probability score per point, at the cost of somewhat more computation."},
+      formula:"jerarquía sobre alcanzabilidad mutua → clústeres estables",
+      use:{es:"densidades variables, datos reales complejos", en:"varying densities, complex real-world data"},
+      chips:["min_cluster_size","min_samples","metric"],
+      steps:[
+        {t:{es:"Distancia mutua", en:"Mutual reachability"}, d:{es:"Se reescalan las distancias con la alcanzabilidad mutua, sensible a la densidad local.", en:"Distances are rescaled with mutual reachability, sensitive to local density."}},
+        {t:{es:"Árbol de expansión", en:"Spanning tree"}, d:{es:"Se construye un árbol de expansión mínima (MST) sobre esas distancias.", en:"A minimum spanning tree (MST) is built over those distances."}},
+        {t:{es:"Jerarquía condensada", en:"Condensed hierarchy"}, d:{es:"Cortando el MST a distintos niveles se obtiene una jerarquía de clústeres condensada.", en:"Cutting the MST at different levels yields a condensed cluster hierarchy."}},
+        {t:{es:"Extraer estables", en:"Extract stable"}, d:{es:"Se seleccionan los clústeres más persistentes (mayor estabilidad); el resto es ruido.", en:"The most persistent (most stable) clusters are selected; the rest is noise."}}
+      ],
+      hparams:[
+        {n:"min_cluster_size", def:"5", d:{es:"Tamaño mínimo de un grupo válido; el parámetro más influyente.", en:"Minimum size of a valid group; the most influential parameter."}},
+        {n:"min_samples", def:"None", d:{es:"Conservadurismo ante el ruido; más alto = más puntos como outliers.", en:"Conservativeness toward noise; higher = more points as outliers."}},
+        {n:"cluster_selection_epsilon", def:"0.0", d:{es:"Fusiona micro-clústeres por debajo de este umbral de distancia.", en:"Merges micro-clusters below this distance threshold."}},
+        {n:"metric", def:"'euclidean'", d:{es:"Métrica de distancia entre puntos.", en:"Distance metric between points."}},
+        {n:"cluster_selection_method", def:"'eom'", d:{es:"'eom' (excess of mass) o 'leaf' para clústeres más finos.", en:"'eom' (excess of mass) or 'leaf' for finer clusters."}}
+      ]},
+    { id:"pca", tab:"nosupervisado", accent:"#b57bff", anim:"pca",
+      name:"PCA", sub:"análisis de componentes ppales",
+      cat:{es:"Reducción dim.", en:"Dim. reduction"},
+      desc:{es:"Rota los datos hacia las direcciones de máxima varianza y proyecta sobre las primeras: compresión lineal.", en:"Rotates the data toward the directions of maximum variance and projects onto the first ones: linear compression."},
+      long:{es:"Encuentra un nuevo sistema de ejes ortogonales —los componentes principales— ordenados por la cantidad de varianza que capturan; matemáticamente son los autovectores de la matriz de covarianza (o se obtienen por SVD). Proyectar los datos sobre los primeros componentes reduce la dimensión perdiendo la mínima información posible, elimina correlaciones y facilita la visualización y el preprocesado. Es rápido e interpretable mediante la varianza explicada, pero solo captura estructura lineal, es sensible a la escala (conviene estandarizar) y los componentes pueden ser difíciles de interpretar semánticamente. Para estructura no lineal se recurre a t-SNE, UMAP o autoencoders.", en:"It finds a new set of orthogonal axes —the principal components— ordered by how much variance they capture; mathematically they are the eigenvectors of the covariance matrix (or obtained via SVD). Projecting the data onto the first components reduces dimensionality while losing as little information as possible, removes correlations and eases visualization and preprocessing. It is fast and interpretable through explained variance, but it only captures linear structure, is sensitive to scale (standardize first) and the components can be hard to interpret semantically. For non-linear structure you turn to t-SNE, UMAP or autoencoders."},
+      formula:"max Var(Xw), ‖w‖=1  →  autovectores de Σ",
+      use:{es:"compresión, visualización, quitar correlación", en:"compression, visualization, decorrelation"},
+      chips:["n_components","svd_solver","whiten"],
+      steps:[
+        {t:{es:"Centrar datos", en:"Center the data"}, d:{es:"Se resta la media de cada feature para centrar la nube en el origen.", en:"Subtract each feature's mean to center the cloud at the origin."}},
+        {t:{es:"Direcciones de varianza", en:"Variance directions"}, d:{es:"Se calculan los autovectores de la matriz de covarianza (o vía SVD).", en:"Compute the eigenvectors of the covariance matrix (or via SVD)."}},
+        {t:{es:"Ordenar por varianza", en:"Rank by variance"}, d:{es:"Los componentes se ordenan por varianza explicada: PC1 captura la máxima.", en:"Components are ranked by explained variance: PC1 captures the most."}},
+        {t:{es:"Proyectar", en:"Project"}, d:{es:"Se proyectan los datos sobre los primeros componentes y se descarta el resto.", en:"Project the data onto the first components and drop the rest."}}
+      ],
+      hparams:[
+        {n:"n_components", def:"None", d:{es:"Cuántos componentes conservar; un decimal (0.95) mantiene ese % de varianza.", en:"How many components to keep; a decimal (0.95) keeps that % of variance."}},
+        {n:"svd_solver", def:"'auto'", d:{es:"Método de descomposición: full, randomized (grandes), arpack.", en:"Decomposition method: full, randomized (large), arpack."}},
+        {n:"whiten", def:"False", d:{es:"Escala los componentes a varianza unidad (útil antes de algunos modelos).", en:"Scales components to unit variance (useful before some models)."}}
+      ]},
+    { id:"tsne", tab:"nosupervisado", accent:"#b57bff", anim:"tsne",
+      name:"t-SNE", sub:"embedding no lineal",
+      cat:{es:"Reducción dim.", en:"Dim. reduction"},
+      desc:{es:"Proyecta a 2D/3D preservando la vecindad local: revela clústeres pero distorsiona distancias globales.", en:"Projects to 2D/3D preserving local neighborhoods: reveals clusters but distorts global distances."},
+      long:{es:"Es una técnica de visualización no lineal. Modela la similitud entre pares de puntos en alta dimensión como probabilidades condicionales (más probables cuanto más vecinos) y busca una disposición en 2D o 3D cuyas similitudes, medidas con una distribución t de Student de colas pesadas, se parezcan lo más posible, minimizando la divergencia de Kullback-Leibler por descenso de gradiente. Preserva de forma excelente la estructura local, revelando clústeres nítidos, pero las distancias y tamaños globales no son fiables y el resultado depende mucho de la perplexity y de la semilla. Es lento en datasets grandes y sirve para explorar, no para medir.", en:"It is a non-linear visualization technique. It models the similarity between pairs of points in high dimensions as conditional probabilities (more likely the closer they are) and searches for a 2D or 3D layout whose similarities, measured with a heavy-tailed Student-t distribution, match as closely as possible, minimizing the Kullback-Leibler divergence by gradient descent. It preserves local structure excellently, revealing crisp clusters, but global distances and sizes are unreliable and the result depends heavily on perplexity and the seed. It is slow on large datasets and is meant for exploring, not measuring."},
+      formula:"min KL(P‖Q),  Q con t-Student de cola pesada",
+      use:{es:"visualización de clústeres en 2D/3D", en:"cluster visualization in 2D/3D"},
+      chips:["perplexity","learning_rate","n_iter"],
+      steps:[
+        {t:{es:"Similitudes en alta dim.", en:"High-dim similarities"}, d:{es:"Se convierten las distancias en probabilidades de vecindad según la perplexity.", en:"Distances are turned into neighbor probabilities set by the perplexity."}},
+        {t:{es:"Inicializar en 2D", en:"Initialize in 2D"}, d:{es:"Se colocan los puntos en posiciones iniciales en el plano de baja dimensión.", en:"Points are placed at initial positions in the low-dimensional plane."}},
+        {t:{es:"Atraer / repeler", en:"Attract / repel"}, d:{es:"Los vecinos se atraen y los no vecinos se repelen (cola pesada t-Student).", en:"Neighbors attract and non-neighbors repel (heavy-tailed Student-t)."}},
+        {t:{es:"Minimizar KL", en:"Minimize KL"}, d:{es:"El gradiente reduce la divergencia KL hasta que los clústeres se estabilizan.", en:"Gradient descent lowers the KL divergence until the clusters settle."}}
+      ],
+      hparams:[
+        {n:"perplexity", def:"30", d:{es:"Nº efectivo de vecinos considerados (5–50); cambia mucho la forma del resultado.", en:"Effective number of neighbors considered (5–50); strongly changes the result's shape."}},
+        {n:"learning_rate", def:"'auto'", d:{es:"Paso del gradiente; muy bajo/alto colapsa o dispersa los puntos.", en:"Gradient step; too low/high collapses or scatters the points."}},
+        {n:"n_iter", def:"1000", d:{es:"Iteraciones de optimización; pocas dejan el embedding sin converger.", en:"Optimization iterations; too few leave the embedding unconverged."}},
+        {n:"early_exaggeration", def:"12", d:{es:"Amplifica la atracción al inicio para separar clústeres.", en:"Amplifies attraction early to separate clusters."}},
+        {n:"metric", def:"'euclidean'", d:{es:"Distancia con la que se miden las similitudes.", en:"Distance used to measure similarities."}}
+      ]},
+    { id:"umap", tab:"nosupervisado", accent:"#b57bff", anim:"umap",
+      name:"UMAP", sub:"manifold learning",
+      cat:{es:"Reducción dim.", en:"Dim. reduction"},
+      desc:{es:"Construye un grafo de vecinos y lo despliega en baja dimensión: más rápido que t-SNE y conserva algo de estructura global.", en:"Builds a neighbor graph and unfolds it in low dimensions: faster than t-SNE and keeps more global structure."},
+      long:{es:"Se apoya en teoría de variedades (manifolds) y topología. Construye un grafo difuso de vecinos que aproxima la estructura local de los datos en alta dimensión y luego optimiza una disposición de baja dimensión cuyo grafo se parezca al original, minimizando una entropía cruzada entre ambos. Comparado con t-SNE es bastante más rápido y escalable, preserva mejor la estructura global (las distancias entre clústeres son más significativas) y puede aplicarse a datos nuevos y a más de dos dimensiones. Aun así sigue siendo estocástico y sensible a n_neighbors y min_dist, y sus distancias no deben leerse como métricas exactas.", en:"It rests on manifold theory and topology. It builds a fuzzy neighbor graph that approximates the local structure of the high-dimensional data and then optimizes a low-dimensional layout whose graph resembles the original, minimizing a cross-entropy between the two. Compared with t-SNE it is considerably faster and more scalable, preserves global structure better (distances between clusters are more meaningful) and can be applied to new data and to more than two dimensions. Even so it remains stochastic and sensitive to n_neighbors and min_dist, and its distances should not be read as exact metrics."},
+      formula:"min cross-entropy entre grafos fuzzy (alta/baja dim.)",
+      use:{es:"visualización y preprocesado, datasets grandes", en:"visualization and preprocessing, large datasets"},
+      chips:["n_neighbors","min_dist","n_components"],
+      steps:[
+        {t:{es:"Grafo de vecinos", en:"Neighbor graph"}, d:{es:"Se construye el grafo de los k vecinos más cercanos de cada punto.", en:"Build the k-nearest-neighbor graph of each point."}},
+        {t:{es:"Pesos difusos", en:"Fuzzy weights"}, d:{es:"A cada arista se le da un peso difuso según la distancia local.", en:"Each edge gets a fuzzy weight based on local distance."}},
+        {t:{es:"Layout de baja dim.", en:"Low-dim layout"}, d:{es:"Se inicializa (a menudo con embedding espectral) y se optimiza la disposición.", en:"Initialize (often with a spectral embedding) and optimize the layout."}},
+        {t:{es:"Contraer clústeres", en:"Contract clusters"}, d:{es:"Fuerzas de atracción/repulsión sobre el grafo compactan los clústeres preservando su estructura.", en:"Attraction/repulsion forces over the graph compact the clusters while preserving structure."}}
+      ],
+      hparams:[
+        {n:"n_neighbors", def:"15", d:{es:"Balance local/global: bajo enfatiza estructura fina, alto la global.", en:"Local/global balance: low emphasizes fine structure, high the global one."}},
+        {n:"min_dist", def:"0.1", d:{es:"Cómo de juntos se empaquetan los puntos; bajo = clústeres muy compactos.", en:"How tightly points pack; low = very compact clusters."}},
+        {n:"n_components", def:"2", d:{es:"Dimensiones de salida (2 o 3 para visualizar).", en:"Output dimensions (2 or 3 to visualize)."}},
+        {n:"metric", def:"'euclidean'", d:{es:"Distancia del grafo de vecinos (coseno, manhattan…).", en:"Distance for the neighbor graph (cosine, manhattan…)."}}
+      ]},
+
+    // ---------- SERIES TEMPORALES ----------
+    { id:"arima", tab:"series", accent:"#b57bff", anim:"arima",
+      name:"ARIMA", sub:"auto-regresivo integrado",
+      cat:{es:"Serie temporal", en:"Time series"},
+      desc:{es:"Modela una serie con sus propios retardos (AR), diferencias para hacerla estacionaria (I) y errores pasados (MA).", en:"Models a series from its own lags (AR), differencing to make it stationary (I) and past errors (MA)."},
+      long:{es:"Combina tres bloques sobre una única serie univariante. La parte autorregresiva AR(p) expresa el valor actual como combinación lineal de p valores pasados; la integración I(d) diferencia la serie d veces para eliminar tendencia y estabilizar media y varianza (hacerla estacionaria); y la media móvil MA(q) incorpora q errores de predicción pasados. Se identifican los órdenes con las gráficas ACF/PACF, se estiman los coeficientes por máxima verosimilitud y se pronostica con intervalos de confianza que se ensanchan con el horizonte. Es un modelo clásico, interpretable y sólido para series estacionarias sin estacionalidad marcada; cuando la hay se usa SARIMA/SARIMAX.", en:"It combines three blocks on a single univariate series. The autoregressive part AR(p) expresses the current value as a linear combination of p past values; integration I(d) differences the series d times to remove trend and stabilize mean and variance (make it stationary); and the moving average MA(q) incorporates q past prediction errors. The orders are identified with ACF/PACF plots, the coefficients are estimated by maximum likelihood and it forecasts with confidence intervals that widen with the horizon. It is a classic, interpretable and solid model for stationary series without marked seasonality; when there is seasonality you use SARIMA/SARIMAX."},
+      formula:"(1 − Σφᵢ Lⁱ)(1 − L)ᵈ yₜ = (1 + Σθⱼ Lʲ) εₜ",
+      use:{es:"series estacionarias, tendencia, sin estacionalidad fuerte", en:"stationary series, trend, no strong seasonality"},
+      chips:["p","d","q"],
+      steps:[
+        {t:{es:"Estacionarizar (d)", en:"Make stationary (d)"}, d:{es:"Se diferencia la serie d veces hasta que su media y varianza son estables.", en:"The series is differenced d times until its mean and variance are stable."}},
+        {t:{es:"Identificar p, q", en:"Identify p, q"}, d:{es:"Las gráficas ACF y PACF sugieren los órdenes AR (p) y MA (q).", en:"The ACF and PACF plots suggest the AR (p) and MA (q) orders."}},
+        {t:{es:"Ajustar coeficientes", en:"Fit coefficients"}, d:{es:"Se estiman los coeficientes φ y θ por máxima verosimilitud.", en:"The φ and θ coefficients are estimated by maximum likelihood."}},
+        {t:{es:"Pronosticar", en:"Forecast"}, d:{es:"Se proyecta el futuro con intervalos de confianza que crecen con el horizonte.", en:"The future is projected with confidence intervals that widen with the horizon."}}
+      ],
+      hparams:[
+        {n:"p (AR)", def:"—", d:{es:"Nº de retardos autorregresivos: cuántos valores pasados influyen.", en:"Number of autoregressive lags: how many past values matter."}},
+        {n:"d (I)", def:"—", d:{es:"Veces que se diferencia la serie para hacerla estacionaria.", en:"Times the series is differenced to make it stationary."}},
+        {n:"q (MA)", def:"—", d:{es:"Nº de errores pasados (media móvil) incluidos.", en:"Number of past errors (moving average) included."}},
+        {n:"trend", def:"'c'", d:{es:"Término de tendencia determinista: 'n', 'c', 't', 'ct'.", en:"Deterministic trend term: 'n', 'c', 't', 'ct'."}},
+        {n:"method", def:"'lbfgs'", d:{es:"Optimizador de la verosimilitud.", en:"Likelihood optimizer."}}
+      ]},
+    { id:"sarimax", tab:"series", accent:"#b57bff", anim:"sarimax",
+      name:"SARIMAX", sub:"ARIMA estacional + exógenas",
+      cat:{es:"Serie temporal", en:"Time series"},
+      desc:{es:"Extiende ARIMA con estacionalidad (S) y variables externas (X) como festivos o precios.", en:"Extends ARIMA with seasonality (S) and external variables (X) like holidays or prices."},
+      long:{es:"Es el modelo clásico de series temporales más completo. Sobre la base ARIMA(p,d,q) añade un bloque estacional (P,D,Q) con periodo s que captura patrones que se repiten cada s pasos (por ejemplo 12 meses), y permite incluir regresores exógenos X —festivos, precio, clima, campañas— que aportan información externa al pronóstico. Todos los términos se estiman conjuntamente por máxima verosimilitud. Es potente e interpretable para series con estacionalidad clara y drivers conocidos, pero exige elegir bien muchos órdenes y que las variables exógenas también estén disponibles (o se puedan prever) en el futuro que se quiere pronosticar.", en:"It is the most complete classical time-series model. On top of the ARIMA(p,d,q) base it adds a seasonal block (P,D,Q) with period s that captures patterns repeating every s steps (for example 12 months), and it lets you include exogenous regressors X —holidays, price, weather, campaigns— that bring external information into the forecast. All terms are estimated jointly by maximum likelihood. It is powerful and interpretable for series with clear seasonality and known drivers, but it requires choosing many orders well and that the exogenous variables are also available (or can be forecast) over the future you want to predict."},
+      formula:"ARIMA(p,d,q)(P,D,Q)ₛ + βᵀXₜ",
+      use:{es:"estacionalidad clara + variables externas", en:"clear seasonality + external variables"},
+      chips:["order","seasonal_order","exog"],
+      steps:[
+        {t:{es:"Componente no estacional", en:"Non-seasonal part"}, d:{es:"Un ARIMA(p,d,q) modela la dinámica de corto plazo de la serie.", en:"An ARIMA(p,d,q) models the series' short-term dynamics."}},
+        {t:{es:"Componente estacional", en:"Seasonal part"}, d:{es:"Un bloque (P,D,Q) con periodo s captura los patrones que se repiten cada s pasos.", en:"A (P,D,Q) block with period s captures patterns repeating every s steps."}},
+        {t:{es:"Añadir exógenas", en:"Add exogenous"}, d:{es:"Se incorporan regresores externos X (festivos, precio, clima…) al modelo.", en:"External regressors X (holidays, price, weather…) are added to the model."}},
+        {t:{es:"Estimar y pronosticar", en:"Fit and forecast"}, d:{es:"Todos los términos se ajustan a la vez por MLE y se pronostica conservando la estacionalidad.", en:"All terms are fit jointly by MLE and the forecast keeps the seasonality."}}
+      ],
+      hparams:[
+        {n:"order (p,d,q)", def:"—", d:{es:"Órdenes ARIMA de la parte no estacional.", en:"ARIMA orders of the non-seasonal part."}},
+        {n:"seasonal_order (P,D,Q,s)", def:"—", d:{es:"Órdenes estacionales y periodo s (ej. 12 para mensual anual).", en:"Seasonal orders and period s (e.g. 12 for monthly-yearly)."}},
+        {n:"exog", def:"None", d:{es:"Matriz de variables externas alineada con la serie.", en:"Matrix of external variables aligned with the series."}},
+        {n:"trend", def:"'n'", d:{es:"Tendencia determinista añadida al modelo.", en:"Deterministic trend added to the model."}},
+        {n:"enforce_stationarity", def:"True", d:{es:"Obliga a que los parámetros AR cumplan estacionariedad.", en:"Forces the AR parameters to satisfy stationarity."}}
+      ]},
+    { id:"prophet", tab:"series", accent:"#5b8ef0", anim:"prophet",
+      name:"Prophet", sub:"modelo aditivo (Meta)",
+      cat:{es:"Serie temporal", en:"Time series"},
+      desc:{es:"Descompone la serie en tendencia + estacionalidades + festivos. Robusto, automático y tolerante a huecos.", en:"Decomposes the series into trend + seasonalities + holidays. Robust, automatic and tolerant to gaps."},
+      long:{es:"Modelo aditivo (o multiplicativo) desarrollado por Meta y pensado para analistas más que para estadísticos. Descompone la serie en una tendencia por tramos con puntos de cambio (lineal o logística con saturación), una o varias estacionalidades periódicas modeladas con series de Fourier (anual, semanal, diaria) y efectos puntuales de festivos y eventos, más el ruido. Su ajuste bayesiano es robusto a valores atípicos y a datos faltantes, funciona con pocos parámetros intuitivos y produce descomposiciones e intervalos de incertidumbre fáciles de comunicar. Brilla en series de negocio con estacionalidad múltiple; no es la mejor opción para dinámicas puramente autorregresivas de alta frecuencia.", en:"An additive (or multiplicative) model developed by Meta and aimed at analysts rather than statisticians. It decomposes the series into a piecewise trend with changepoints (linear or logistic with saturation), one or more periodic seasonalities modeled with Fourier series (yearly, weekly, daily) and point effects from holidays and events, plus noise. Its Bayesian fit is robust to outliers and missing data, works with few intuitive parameters and produces decompositions and uncertainty intervals that are easy to communicate. It shines on business series with multiple seasonality; it is not the best choice for purely autoregressive, high-frequency dynamics."},
+      formula:"y(t) = g(t) + s(t) + h(t) + εₜ",
+      use:{es:"series de negocio, estacionalidad múltiple, poco tuning", en:"business series, multiple seasonality, little tuning"},
+      chips:["changepoint_prior_scale","seasonality_mode","holidays"],
+      steps:[
+        {t:{es:"Tendencia g(t)", en:"Trend g(t)"}, d:{es:"Se modela una tendencia por tramos con changepoints (lineal o logística saturada).", en:"A piecewise trend with changepoints is modeled (linear or saturating logistic)."}},
+        {t:{es:"Estacionalidad s(t)", en:"Seasonality s(t)"}, d:{es:"Las estacionalidades (anual, semanal…) se modelan con series de Fourier.", en:"Seasonalities (yearly, weekly…) are modeled with Fourier series."}},
+        {t:{es:"Festivos h(t)", en:"Holidays h(t)"}, d:{es:"Se añaden efectos puntuales de festivos y eventos con su ventana de influencia.", en:"Point effects of holidays and events are added with their influence window."}},
+        {t:{es:"Sumar y pronosticar", en:"Add and forecast"}, d:{es:"Se suman los componentes y se ajusta de forma bayesiana con banda de incertidumbre.", en:"The components are summed and fit in a Bayesian way with an uncertainty band."}}
+      ],
+      hparams:[
+        {n:"changepoint_prior_scale", def:"0.05", d:{es:"Flexibilidad de la tendencia; alto = se adapta más (riesgo de sobreajuste).", en:"Trend flexibility; high = adapts more (overfitting risk)."}},
+        {n:"seasonality_prior_scale", def:"10", d:{es:"Fuerza de las estacionalidades.", en:"Strength of the seasonalities."}},
+        {n:"seasonality_mode", def:"'additive'", d:{es:"'additive' o 'multiplicative' si la estacionalidad crece con el nivel.", en:"'additive' or 'multiplicative' if seasonality grows with the level."}},
+        {n:"changepoint_range", def:"0.8", d:{es:"Fracción inicial de la serie donde se permiten cambios de tendencia.", en:"Initial fraction of the series where trend changes are allowed."}},
+        {n:"holidays", def:"None", d:{es:"DataFrame de festivos/eventos con su ventana de efecto.", en:"DataFrame of holidays/events with their effect window."}}
+      ]},
+
+    // ---------- REDES NEURONALES ----------
+    { id:"densenn", tab:"redes", accent:"#5b8ef0", anim:"densenn",
+      name:"Red Neuronal Densa", sub:"MLP · feed-forward",
+      cat:{es:"Red neuronal", en:"Neural network"},
+      desc:{es:"Capas de neuronas totalmente conectadas que transforman la entrada con pesos y activaciones no lineales.", en:"Fully-connected layers of neurons that transform the input with weights and non-linear activations."},
+      long:{es:"El perceptrón multicapa (MLP) apila capas densas en las que cada neurona calcula una combinación lineal de las salidas de la capa anterior y le aplica una función de activación no lineal (ReLU, tanh…). Esa no linealidad, encadenada en varias capas, le permite aproximar funciones muy complejas. Se entrena con backpropagation: propaga la entrada hacia delante, mide la pérdida frente al objetivo y ajusta todos los pesos por descenso de gradiente. Es la arquitectura base del deep learning y sirve para clasificación y regresión sobre datos tabulares o vectoriales, aunque necesita bastantes datos, tuning de learning_rate y regularización (dropout) para no sobreajustar.", en:"The multilayer perceptron (MLP) stacks dense layers where each neuron computes a linear combination of the previous layer's outputs and applies a non-linear activation (ReLU, tanh…). That non-linearity, chained across several layers, lets it approximate very complex functions. It is trained with backpropagation: it propagates the input forward, measures the loss against the target and adjusts all weights by gradient descent. It is the base architecture of deep learning and serves classification and regression on tabular or vector data, though it needs plenty of data, learning_rate tuning and regularization (dropout) to avoid overfitting."},
+      formula:"a⁽ˡ⁾ = σ(W⁽ˡ⁾ a⁽ˡ⁻¹⁾ + b⁽ˡ⁾)",
+      use:{es:"tabular no lineal, base de deep learning", en:"non-linear tabular data, deep learning baseline"},
+      chips:["layers/units","activation","learning_rate"],
+      steps:[
+        {t:{es:"Forward pass", en:"Forward pass"}, d:{es:"La entrada se propaga hacia delante capa a capa mediante los pesos.", en:"The input is propagated forward layer by layer through the weights."}},
+        {t:{es:"Activación no lineal", en:"Non-linear activation"}, d:{es:"Cada capa aplica una activación no lineal (ReLU, tanh…) que da capacidad expresiva.", en:"Each layer applies a non-linear activation (ReLU, tanh…) that gives expressive power."}},
+        {t:{es:"Calcular pérdida", en:"Compute loss"}, d:{es:"La salida se compara con el objetivo mediante una función de pérdida.", en:"The output is compared with the target through a loss function."}},
+        {t:{es:"Backprop + update", en:"Backprop + update"}, d:{es:"El error se retropropaga y un optimizador (Adam, SGD…) ajusta todos los pesos.", en:"The error is backpropagated and an optimizer (Adam, SGD…) updates all the weights."}}
+      ],
+      hparams:[
+        {n:"hidden_units / layers", def:"—", d:{es:"Ancho y profundidad de la red; controla la capacidad del modelo.", en:"Width and depth of the network; controls model capacity."}},
+        {n:"activation", def:"'relu'", d:{es:"No linealidad: relu, tanh, gelu, sigmoid…", en:"Non-linearity: relu, tanh, gelu, sigmoid…"}},
+        {n:"learning_rate", def:"1e-3", d:{es:"Tamaño del paso del optimizador; el hiperparámetro más sensible.", en:"Optimizer step size; the most sensitive hyperparameter."}},
+        {n:"batch_size", def:"32", d:{es:"Ejemplos por actualización; afecta ruido y velocidad.", en:"Examples per update; affects noise and speed."}},
+        {n:"dropout", def:"0.0", d:{es:"Fracción de neuronas apagadas al entrenar para regularizar.", en:"Fraction of neurons dropped during training to regularize."}},
+        {n:"optimizer", def:"'adam'", d:{es:"Algoritmo de descenso: adam, sgd, rmsprop…", en:"Descent algorithm: adam, sgd, rmsprop…"}}
+      ]},
+    { id:"cnn", tab:"redes", accent:"#b57bff", anim:"cnn",
+      name:"CNN", sub:"red convolucional",
+      cat:{es:"Red convolucional", en:"Convolutional net"},
+      desc:{es:"Desliza filtros aprendidos sobre la imagen para detectar patrones locales (bordes, texturas, formas).", en:"Slides learned filters over the image to detect local patterns (edges, textures, shapes)."},
+      long:{es:"La red neuronal convolucional está pensada para datos con estructura espacial, sobre todo imágenes. Sus capas convolucionales aplican filtros pequeños que se deslizan por toda la entrada compartiendo pesos, produciendo mapas de características que detectan patrones locales con invariancia a la traslación y muchos menos parámetros que una capa densa. Las capas de pooling reducen la resolución conservando lo relevante, y al apilar bloques la red aprende una jerarquía: de bordes y texturas simples a partes y objetos complejos, que una cabeza densa final clasifica. Es la base de la visión por computador moderna y también se aplica a audio y señales 1D.", en:"The convolutional neural network is designed for data with spatial structure, above all images. Its convolutional layers apply small filters that slide across the whole input sharing weights, producing feature maps that detect local patterns with translation invariance and far fewer parameters than a dense layer. Pooling layers reduce resolution while keeping what matters, and by stacking blocks the network learns a hierarchy: from simple edges and textures to complex parts and objects, which a final dense head classifies. It is the backbone of modern computer vision and is also applied to audio and 1D signals."},
+      formula:"(I ∗ K)(i,j) = Σₘ Σₙ I(i+m, j+n)·K(m,n)",
+      use:{es:"imágenes, señales, datos con estructura espacial", en:"images, signals, spatially structured data"},
+      chips:["filters","kernel_size","stride"],
+      steps:[
+        {t:{es:"Convolución", en:"Convolution"}, d:{es:"Un filtro pequeño con pesos compartidos se desliza por toda la imagen.", en:"A small filter with shared weights slides across the whole image."}},
+        {t:{es:"Mapa de características", en:"Feature map"}, d:{es:"En cada posición mide la coincidencia y forma un mapa de características.", en:"At each position it measures the match, forming a feature map."}},
+        {t:{es:"Pooling", en:"Pooling"}, d:{es:"El pooling reduce la resolución conservando lo más relevante (invariancia a la traslación).", en:"Pooling reduces resolution while keeping the most relevant info (translation invariance)."}},
+        {t:{es:"Apilar + clasificar", en:"Stack + classify"}, d:{es:"Al apilar bloques la red pasa de bordes a objetos; una cabeza densa final clasifica.", en:"Stacking blocks moves from edges to objects; a final dense head classifies."}}
+      ],
+      hparams:[
+        {n:"filters", def:"—", d:{es:"Número de mapas de características por capa (cuántos patrones aprende).", en:"Number of feature maps per layer (how many patterns it learns)."}},
+        {n:"kernel_size", def:"3×3", d:{es:"Tamaño del filtro; ventanas mayores capturan patrones más amplios.", en:"Filter size; larger windows capture broader patterns."}},
+        {n:"stride", def:"1", d:{es:"Paso del filtro; >1 reduce la resolución de salida.", en:"Filter step; >1 reduces output resolution."}},
+        {n:"padding", def:"'same'", d:{es:"'same' conserva el tamaño, 'valid' lo reduce en los bordes.", en:"'same' keeps the size, 'valid' shrinks it at the borders."}},
+        {n:"pool_size", def:"2×2", d:{es:"Ventana de submuestreo del pooling.", en:"Pooling downsampling window."}}
+      ]},
+    { id:"lstm", tab:"redes", accent:"#b57bff", anim:"lstm",
+      name:"LSTM", sub:"memoria a largo plazo",
+      cat:{es:"Red recurrente", en:"Recurrent net"},
+      desc:{es:"Red recurrente con puertas que deciden qué recordar y qué olvidar: aprende dependencias en secuencias.", en:"Recurrent network with gates that decide what to remember and forget: learns dependencies in sequences."},
+      long:{es:"Es una red recurrente diseñada para capturar dependencias a largo plazo en secuencias. Procesa la entrada paso a paso manteniendo un estado de celda —una especie de cinta transportadora de memoria— regulado por tres puertas: la de olvido decide qué información descartar, la de entrada qué nueva información almacenar y la de salida qué exponer como estado oculto. Este mecanismo de puertas resuelve el desvanecimiento del gradiente que sufren las RNN simples, permitiendo recordar contexto muchos pasos atrás. Es muy usada en texto, series temporales, audio y cualquier dato secuencial, aunque en muchas tareas los Transformers la han superado por su paralelización y mayor alcance.", en:"It is a recurrent network designed to capture long-range dependencies in sequences. It processes the input step by step while maintaining a cell state —a kind of memory conveyor belt— regulated by three gates: the forget gate decides what to discard, the input gate what new information to store and the output gate what to expose as the hidden state. This gating mechanism solves the vanishing-gradient problem of plain RNNs, allowing it to remember context many steps back. It is widely used for text, time series, audio and any sequential data, though on many tasks Transformers have surpassed it thanks to their parallelization and longer reach."},
+      formula:"cₜ = fₜ⊙cₜ₋₁ + iₜ⊙c̃ₜ,   f,i,o = σ(·)",
+      use:{es:"texto, series temporales, audio, secuencias", en:"text, time series, audio, sequences"},
+      chips:["units","return_sequences","dropout"],
+      steps:[
+        {t:{es:"Entrada por paso", en:"Step-wise input"}, d:{es:"La secuencia se procesa un elemento (token/valor) en cada instante.", en:"The sequence is processed one element (token/value) per step."}},
+        {t:{es:"Puertas", en:"Gates"}, d:{es:"Las puertas de olvido, entrada y salida regulan qué información fluye.", en:"The forget, input and output gates regulate what information flows."}},
+        {t:{es:"Estado de celda", en:"Cell state"}, d:{es:"El estado de celda transporta la memoria a largo plazo entre pasos.", en:"The cell state carries long-term memory across steps."}},
+        {t:{es:"Salida secuencial", en:"Sequential output"}, d:{es:"Se emite una predicción en cada paso o solo la del último, según la tarea.", en:"A prediction is emitted per step or only at the last one, depending on the task."}}
+      ],
+      hparams:[
+        {n:"units", def:"—", d:{es:"Dimensión del estado oculto/celda; la capacidad de memoria.", en:"Dimension of the hidden/cell state; the memory capacity."}},
+        {n:"num_layers", def:"1", d:{es:"LSTMs apiladas para dependencias más complejas.", en:"Stacked LSTMs for more complex dependencies."}},
+        {n:"return_sequences", def:"False", d:{es:"Devolver la salida de cada paso o solo la última.", en:"Return the output of each step or only the last."}},
+        {n:"dropout / recurrent_dropout", def:"0.0", d:{es:"Regularización sobre entradas y conexiones recurrentes.", en:"Regularization on inputs and recurrent connections."}},
+        {n:"bidirectional", def:"False", d:{es:"Procesa la secuencia en ambos sentidos.", en:"Processes the sequence in both directions."}}
+      ]},
+    { id:"autoencoder", tab:"redes", accent:"#5b8ef0", anim:"autoencoder",
+      name:"Autoencoder", sub:"compresión no supervisada",
+      cat:{es:"Autoencoder", en:"Autoencoder"},
+      desc:{es:"Aprende a comprimir la entrada a un cuello de botella y reconstruirla: extrae representaciones compactas.", en:"Learns to compress the input to a bottleneck and reconstruct it: extracts compact representations."},
+      long:{es:"Es una red no supervisada formada por dos mitades: un encoder que comprime la entrada hasta un código latente de baja dimensión (el cuello de botella) y un decoder que intenta reconstruir la entrada original a partir de ese código. Al entrenarse minimizando el error de reconstrucción, la red se ve forzada a capturar la estructura esencial de los datos en el latente, descartando el ruido. Ese código sirve para reducción de dimensionalidad no lineal, denoising, compresión o detección de anomalías (lo que se reconstruye mal es anómalo). Variantes como el denoising, sparse o contractive autoencoder regularizan el latente, y el VAE lo convierte en generativo.", en:"It is an unsupervised network made of two halves: an encoder that compresses the input down to a low-dimensional latent code (the bottleneck) and a decoder that tries to reconstruct the original input from that code. By training to minimize the reconstruction error, the network is forced to capture the essential structure of the data in the latent, discarding noise. That code is useful for non-linear dimensionality reduction, denoising, compression or anomaly detection (whatever reconstructs poorly is anomalous). Variants like the denoising, sparse or contractive autoencoder regularize the latent, and the VAE turns it generative."},
+      formula:"min ‖x − g(f(x))‖²   (f=encoder, g=decoder)",
+      use:{es:"denoising, anomalías, reducción dim. no lineal", en:"denoising, anomalies, non-linear dim. reduction"},
+      chips:["latent_dim","activation","loss"],
+      steps:[
+        {t:{es:"Encoder", en:"Encoder"}, d:{es:"El encoder comprime progresivamente la entrada hacia el cuello de botella z.", en:"The encoder progressively compresses the input toward the bottleneck z."}},
+        {t:{es:"Código latente", en:"Latent code"}, d:{es:"z es la representación comprimida de baja dimensión de la entrada.", en:"z is the low-dimensional compressed representation of the input."}},
+        {t:{es:"Decoder", en:"Decoder"}, d:{es:"El decoder intenta reconstruir la entrada original x̂ a partir de z.", en:"The decoder tries to reconstruct the original input x̂ from z."}},
+        {t:{es:"Minimizar reconstrucción", en:"Minimize reconstruction"}, d:{es:"Se entrenan ambos minimizando el error de reconstrucción entre x y x̂.", en:"Both are trained by minimizing the reconstruction error between x and x̂."}}
+      ],
+      hparams:[
+        {n:"latent_dim", def:"—", d:{es:"Tamaño del cuello de botella; cuánta compresión aplicas.", en:"Bottleneck size; how much compression you apply."}},
+        {n:"activation", def:"'relu'", d:{es:"No linealidad de encoder/decoder.", en:"Non-linearity of encoder/decoder."}},
+        {n:"loss", def:"'mse'", d:{es:"Error de reconstrucción: MSE o binary crossentropy.", en:"Reconstruction error: MSE or binary crossentropy."}},
+        {n:"tie_weights", def:"False", d:{es:"Compartir pesos entre encoder y decoder (regulariza).", en:"Share weights between encoder and decoder (regularizes)."}},
+        {n:"noise / sparsity", def:"0.0", d:{es:"Ruido de entrada (denoising) o penalización de dispersión.", en:"Input noise (denoising) or sparsity penalty."}}
+      ]},
+    { id:"vae", tab:"redes", accent:"#b57bff", anim:"vae",
+      name:"Variational Autoencoder", sub:"VAE · latente probabilístico",
+      cat:{es:"Generativo", en:"Generative"},
+      desc:{es:"Autoencoder generativo: codifica a una distribución latente y muestrea de ella para generar datos nuevos.", en:"Generative autoencoder: encodes to a latent distribution and samples it to generate new data."},
+      long:{es:"Es un autoencoder con enfoque probabilístico y generativo. En lugar de un código fijo, el encoder produce los parámetros (media μ y desviación σ) de una distribución en el espacio latente; se muestrea un punto z de esa distribución mediante el truco de la reparametrización (que permite backpropagar) y el decoder genera datos a partir de z. Se optimiza el ELBO, que suma un término de reconstrucción y una divergencia KL que empuja el latente hacia una normal estándar. Esa regularización produce un espacio latente continuo y suave: se puede muestrear e interpolar para generar ejemplos nuevos y coherentes. Se usa en generación, interpolación semántica y detección de anomalías.", en:"It is an autoencoder with a probabilistic, generative approach. Instead of a fixed code, the encoder produces the parameters (mean μ and standard deviation σ) of a distribution in latent space; a point z is sampled from it via the reparameterization trick (which allows backpropagation) and the decoder generates data from z. It optimizes the ELBO, which sums a reconstruction term and a KL divergence that pushes the latent toward a standard normal. That regularization yields a smooth, continuous latent space: you can sample and interpolate to generate new, coherent examples. It is used for generation, semantic interpolation and anomaly detection."},
+      formula:"max ELBO = E[log p(x|z)] − KL(q(z|x) ‖ p(z))",
+      use:{es:"generación, interpolación en el latente, anomalías", en:"generation, latent interpolation, anomalies"},
+      chips:["latent_dim","beta (KL)","learning_rate"],
+      steps:[
+        {t:{es:"Encoder → (μ, σ)", en:"Encoder → (μ, σ)"}, d:{es:"El encoder produce la media y la desviación de una distribución latente.", en:"The encoder outputs the mean and deviation of a latent distribution."}},
+        {t:{es:"Muestrear z", en:"Sample z"}, d:{es:"Se muestrea z con el truco de reparametrización z = μ + σ·ε para poder backpropagar.", en:"z is sampled via the reparameterization trick z = μ + σ·ε so gradients can flow."}},
+        {t:{es:"Decoder genera", en:"Decoder generates"}, d:{es:"El decoder genera un dato a partir del z muestreado.", en:"The decoder generates a data point from the sampled z."}},
+        {t:{es:"ELBO (recon + KL)", en:"ELBO (recon + KL)"}, d:{es:"Se optimiza el ELBO: reconstrucción más una KL que regulariza el latente hacia una normal.", en:"The ELBO is optimized: reconstruction plus a KL that regularizes the latent toward a normal."}}
+      ],
+      hparams:[
+        {n:"latent_dim", def:"—", d:{es:"Dimensión del espacio latente generativo.", en:"Dimension of the generative latent space."}},
+        {n:"beta", def:"1.0", d:{es:"Peso del término KL (β-VAE); más alto = latente más regular y desenredado.", en:"Weight of the KL term (β-VAE); higher = more regular, disentangled latent."}},
+        {n:"learning_rate", def:"1e-3", d:{es:"Paso del optimizador.", en:"Optimizer step size."}},
+        {n:"recon_loss", def:"'bce'", d:{es:"Pérdida de reconstrucción: BCE o MSE según los datos.", en:"Reconstruction loss: BCE or MSE depending on the data."}},
+        {n:"kl_annealing", def:"off", d:{es:"Sube el peso KL gradualmente para evitar colapso posterior.", en:"Ramps up the KL weight gradually to avoid posterior collapse."}}
+      ]},
+    { id:"gan", tab:"redes", accent:"#b57bff", anim:"gan",
+      name:"GAN", sub:"adversarial · generador vs discriminador",
+      cat:{es:"Generativo", en:"Generative"},
+      desc:{es:"Dos redes compiten: el generador crea muestras falsas y el discriminador intenta distinguirlas de las reales.", en:"Two networks compete: the generator creates fake samples and the discriminator tries to tell them from real ones."},
+      long:{es:"Una red generativa antagónica enfrenta a dos redes en un juego de suma casi nula. El generador transforma ruido aleatorio z en muestras sintéticas intentando engañar al discriminador, mientras este aprende a distinguir lo real de lo falso. Al entrenarse en alternancia, el gradiente del discriminador guía al generador, cuya distribución se va acercando a la real hasta que el discriminador ya no puede diferenciarlas (salida ≈ 0.5). Producen muestras muy realistas de imágenes, audio o vídeo y sirven para aumento de datos y super-resolución, pero su entrenamiento es delicado: inestabilidad, colapso de modos y necesidad de equilibrar ambas redes, mitigados por variantes como WGAN-GP.", en:"A generative adversarial network pits two networks against each other in a near zero-sum game. The generator turns random noise z into synthetic samples trying to fool the discriminator, while the latter learns to tell real from fake. Trained in alternation, the discriminator's gradient guides the generator, whose distribution moves closer to the real one until the discriminator can no longer tell them apart (output ≈ 0.5). They produce very realistic images, audio or video and serve for data augmentation and super-resolution, but their training is delicate: instability, mode collapse and the need to balance both networks, mitigated by variants like WGAN-GP."},
+      formula:"minG maxD  E[log D(x)] + E[log(1 − D(G(z)))]",
+      use:{es:"generación realista de imágenes/audio, data augmentation", en:"realistic image/audio generation, data augmentation"},
+      chips:["latent_dim","lr_G / lr_D","n_critic"],
+      steps:[
+        {t:{es:"Generar falso", en:"Generate fake"}, d:{es:"El generador transforma ruido aleatorio z en una muestra sintética.", en:"The generator turns random noise z into a synthetic sample."}},
+        {t:{es:"Discriminar", en:"Discriminate"}, d:{es:"El discriminador puntúa cada muestra como real o falsa.", en:"The discriminator scores each sample as real or fake."}},
+        {t:{es:"Juego adversarial", en:"Adversarial game"}, d:{es:"El generador intenta engañar al discriminador y este mejora detectando: aprenden en competencia.", en:"The generator tries to fool the discriminator and it improves at detecting: they learn by competing."}},
+        {t:{es:"Converger", en:"Converge"}, d:{es:"En equilibrio la distribución generada iguala a la real y D ya no distingue (≈0.5).", en:"At equilibrium the generated distribution matches the real one and D can no longer tell (≈0.5)."}}
+      ],
+      hparams:[
+        {n:"latent_dim", def:"—", d:{es:"Dimensión del ruido z de entrada del generador.", en:"Dimension of the generator's input noise z."}},
+        {n:"lr_G / lr_D", def:"2e-4", d:{es:"Tasas de aprendizaje de generador y discriminador (equilibrarlas es clave).", en:"Learning rates of generator and discriminator (balancing them is key)."}},
+        {n:"n_critic", def:"1", d:{es:"Pasos de D por cada paso de G (mayor en WGAN).", en:"D steps per G step (larger in WGAN)."}},
+        {n:"beta1 (Adam)", def:"0.5", d:{es:"Momento del optimizador, típicamente bajo para estabilizar.", en:"Optimizer momentum, typically low to stabilize."}},
+        {n:"gp_lambda", def:"10", d:{es:"Peso del gradient penalty (WGAN-GP) para estabilidad.", en:"Weight of the gradient penalty (WGAN-GP) for stability."}}
+      ]},
+    { id:"pinn", tab:"redes", accent:"#b57bff", anim:"pinn",
+      name:"PINN", sub:"physics-informed NN",
+      cat:{es:"Physics-informed", en:"Physics-informed"},
+      desc:{es:"Red que incorpora una ecuación diferencial en la pérdida: aprende soluciones físicas con pocos datos.", en:"Network that embeds a differential equation in its loss: learns physical solutions with little data."},
+      long:{es:"Una red physics-informed aproxima la solución de un sistema gobernado por ecuaciones diferenciales incorporando la propia física en la función de pérdida. La red toma las coordenadas (por ejemplo x, t) y devuelve la solución candidata u; mediante diferenciación automática se calculan sus derivadas y se evalúa el residuo de la EDP/EDO en un conjunto de puntos de colocación que no necesitan etiqueta. La pérdida combina ese residuo físico con el ajuste a los pocos datos observados y a las condiciones de contorno. Así resuelve o calibra sistemas físicos con datos escasos, respetando las leyes que los rigen, aunque el entrenamiento puede ser delicado y sensible al peso relativo de cada término.", en:"A physics-informed network approximates the solution of a system governed by differential equations by embedding the physics itself in the loss function. The network takes the coordinates (e.g. x, t) and returns the candidate solution u; automatic differentiation computes its derivatives and evaluates the PDE/ODE residual at a set of collocation points that need no labels. The loss combines that physical residual with the fit to the few observed data points and the boundary conditions. This solves or calibrates physical systems with scarce data while respecting the governing laws, though training can be delicate and sensitive to the relative weight of each term."},
+      formula:"L = L_datos + λ·L_PDE(residuo f)",
+      use:{es:"simulación científica, EDPs, datos escasos + física", en:"scientific simulation, PDEs, scarce data + physics"},
+      chips:["lambda_pde","collocation_pts","layers"],
+      steps:[
+        {t:{es:"Red aproxima u(x,t)", en:"Net approximates u(x,t)"}, d:{es:"La red toma las coordenadas y devuelve la solución candidata u.", en:"The network takes the coordinates and returns the candidate solution u."}},
+        {t:{es:"Derivadas por autodiff", en:"Derivatives via autodiff"}, d:{es:"Por diferenciación automática se obtienen las derivadas que exige la ecuación.", en:"Automatic differentiation yields the derivatives the equation requires."}},
+        {t:{es:"Residuo de la EDP", en:"PDE residual"}, d:{es:"Se evalúa cuánto incumple la EDP en puntos de colocación sin etiqueta.", en:"How much the PDE is violated is evaluated at unlabeled collocation points."}},
+        {t:{es:"Minimizar datos + física", en:"Minimize data + physics"}, d:{es:"Se ajustan los pesos combinando el ajuste a los datos y el residuo físico.", en:"The weights are tuned combining the data fit and the physics residual."}}
+      ],
+      hparams:[
+        {n:"lambda_pde", def:"1.0", d:{es:"Peso relativo del residuo físico frente al ajuste a datos.", en:"Relative weight of the physics residual versus the data fit."}},
+        {n:"n_collocation", def:"—", d:{es:"Puntos donde se evalúa la EDP (no necesitan etiqueta).", en:"Points where the PDE is evaluated (no labels needed)."}},
+        {n:"layers / units", def:"—", d:{es:"Arquitectura; suele bastar una red densa profunda y estrecha.", en:"Architecture; a deep, narrow dense net usually suffices."}},
+        {n:"activation", def:"'tanh'", d:{es:"Activación suave (tanh/sin) para derivadas de alto orden bien definidas.", en:"Smooth activation (tanh/sin) for well-defined high-order derivatives."}},
+        {n:"optimizer", def:"Adam+L-BFGS", d:{es:"Adam para explorar y L-BFGS para afinar la convergencia.", en:"Adam to explore and L-BFGS to refine convergence."}}
+      ]},
+  ];
+
+  PG_PALETTE = ['#5b8ef0','#b57bff','#2fd4c4','#ff8b6b','#f4d35e','#7c8cff'];
+  PLAYGROUNDS = {
+    linreg:{type:'ridge', caption:{es:'datos sintéticos 1-D con curvatura', en:'synthetic 1-D data with curvature'}, controls:[
+      {key:'alpha', name:'alpha', kind:'slider', min:0, max:40, step:0.5, default:0},
+      {key:'degree', name:'degree (poly)', kind:'slider', min:1, max:6, step:1, default:3},
+      {key:'fit_intercept', name:'fit_intercept', kind:'toggle', default:true}]},
+    logistic:{type:'logreg', caption:{es:'2 blobs gaussianos · 2 clases', en:'2 gaussian blobs · 2 classes'}, controls:[
+      {key:'C', name:'C', kind:'slider', min:0.01, max:8, step:0.01, default:1},
+      {key:'penalty', name:'penalty', kind:'select', default:'l2', options:[{v:'l2',l:{es:'l2',en:'l2'}},{v:'none',l:{es:'none',en:'none'}}]}]},
+    naivebayes:{type:'gnb', caption:{es:'2 blobs gaussianos · 2 clases', en:'2 gaussian blobs · 2 classes'}, controls:[
+      {key:'var_exp', name:'var_smoothing', kind:'slider', min:-9, max:0, step:1, default:-9}]},
+    svm:{type:'svmlin', caption:{es:'2 blobs · kernel lineal', en:'2 blobs · linear kernel'}, controls:[
+      {key:'C', name:'C', kind:'slider', min:0.01, max:8, step:0.01, default:1}]},
+    tree:{type:'tree', caption:{es:'two-moons · no lineal', en:'two-moons · non-linear'}, controls:[
+      {key:'max_depth', name:'max_depth', kind:'slider', min:1, max:10, step:1, default:3},
+      {key:'min_samples_leaf', name:'min_samples_leaf', kind:'slider', min:1, max:20, step:1, default:1},
+      {key:'criterion', name:'criterion', kind:'select', default:'gini', options:[{v:'gini',l:{es:'gini',en:'gini'}},{v:'entropy',l:{es:'entropy',en:'entropy'}}]}]},
+    forest:{type:'forest', caption:{es:'two-moons · no lineal', en:'two-moons · non-linear'}, controls:[
+      {key:'n_estimators', name:'n_estimators', kind:'slider', min:1, max:40, step:1, default:12},
+      {key:'max_depth', name:'max_depth', kind:'slider', min:1, max:10, step:1, default:5},
+      {key:'max_features', name:'max_features', kind:'select', default:'sqrt', options:[{v:'sqrt',l:{es:'sqrt',en:'sqrt'}},{v:'all',l:{es:'all',en:'all'}}]}]},
+    gboost:{type:'gboost', caption:{es:'datos sintéticos 1-D con curvatura', en:'synthetic 1-D data with curvature'}, controls:[
+      {key:'n_estimators', name:'n_estimators', kind:'slider', min:1, max:100, step:1, default:30},
+      {key:'learning_rate', name:'learning_rate', kind:'slider', min:0.01, max:1, step:0.01, default:0.1},
+      {key:'max_depth', name:'max_depth', kind:'slider', min:1, max:4, step:1, default:2}]},
+    kmeans:{type:'kmeans', caption:{es:'3 blobs sin etiquetar', en:'3 unlabeled blobs'}, controls:[
+      {key:'k', name:'n_clusters (k)', kind:'slider', min:1, max:6, step:1, default:3},
+      {key:'n_init', name:'n_init', kind:'slider', min:1, max:10, step:1, default:10}]},
+    kmedoids:{type:'kmedoids', caption:{es:'3 blobs sin etiquetar', en:'3 unlabeled blobs'}, controls:[
+      {key:'k', name:'n_clusters (k)', kind:'slider', min:1, max:6, step:1, default:3}]},
+    dbscan:{type:'dbscan', caption:{es:'3 blobs + ruido', en:'3 blobs + noise'}, controls:[
+      {key:'eps', name:'eps', kind:'slider', min:0.03, max:0.35, step:0.01, default:0.11},
+      {key:'min_samples', name:'min_samples', kind:'slider', min:2, max:15, step:1, default:5}]},
+    pca:{type:'pca', caption:{es:'nube alargada 2-D', en:'elongated 2-D cloud'}, controls:[
+      {key:'n_components', name:'n_components', kind:'select', default:2, options:[{v:2,l:{es:'2',en:'2'}},{v:1,l:{es:'1',en:'1'}}]}]},
+    densenn:{type:'mlp', caption:{es:'two-moons · no lineal', en:'two-moons · non-linear'}, controls:[
+      {key:'hidden_units', name:'hidden_units', kind:'slider', min:1, max:16, step:1, default:6},
+      {key:'activation', name:'activation', kind:'select', default:'relu', options:[{v:'relu',l:{es:'relu',en:'relu'}},{v:'tanh',l:{es:'tanh',en:'tanh'}}]},
+      {key:'learning_rate', name:'learning_rate', kind:'slider', min:0.02, max:1, step:0.02, default:0.3},
+      {key:'epochs', name:'epochs', kind:'slider', min:20, max:400, step:20, default:160}]}
+  };
+
+  componentDidMount() {
+    this._raf = requestAnimationFrame(this._frame);
+    this._onKey = (e) => { if (e.key === 'Escape') this.close(); };
+    window.addEventListener('keydown', this._onKey);
+  }
+  componentWillUnmount() {
+    cancelAnimationFrame(this._raf);
+    clearInterval(this._stepTimer);
+    window.removeEventListener('keydown', this._onKey);
+  }
+
+  open(id) {
+    clearInterval(this._stepTimer);
+    const cfg = this.PLAYGROUNDS[id], params = {};
+    if (cfg) cfg.controls.forEach(c => { params[c.key] = c.default; });
+    this._pgKey = null; this._pg = null;
+    this.setState({ open: id, phase: 0, mode: 'anim', pgParams: params });
+    this._stepTimer = setInterval(() => this.setState(s => ({ phase: s.phase + 1 })), 1700);
+  }
+  setParam(key, val) { this.setState(s => ({ pgParams: { ...s.pgParams, [key]: val } })); }
+  close() {
+    clearInterval(this._stepTimer);
+    if (this.state.open) this.setState({ open: null });
+  }
+
+  _frame = (t) => {
+    const root = this.rootRef.current;
+    if (root) root.querySelectorAll('canvas[data-anim]').forEach(c => this._paint(c, t));
+    if (this.state.open && this.modalRef.current) {
+      if (this.state.mode === 'playground') this._paintPg(this.modalRef.current);
+      else this._paint(this.modalRef.current, t);
+    }
+    this._raf = requestAnimationFrame(this._frame);
+  };
+  _paint(c, t) {
+    const w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return;
+    const dpr = window.devicePixelRatio || 1;
+    if (c._w !== w || c._h !== h || c._dpr !== dpr) { c.width = w * dpr; c.height = h * dpr; c._w = w; c._h = h; c._dpr = dpr; }
+    const ctx = c.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const fn = this['a_' + c.dataset.anim];
+    if (fn) fn.call(this, ctx, w, h, t, c.dataset.accent || '#b57bff');
+  }
+
+  _paintPg(c) {
+    const w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return;
+    const dpr = window.devicePixelRatio || 1;
+    if (c._w !== w || c._h !== h || c._dpr !== dpr) { c.width = w * dpr; c.height = h * dpr; c._w = w; c._h = h; c._dpr = dpr; }
+    const ctx = c.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.drawPg(ctx, w, h);
+  }
+  drawPg(ctx, W, H) {
+    const pg = this._pg, P = this.PG_PALETTE;
+    if (!pg) { this.base(ctx, W, H, false); return; }
+    if (pg.error) { this.base(ctx, W, H, false); ctx.fillStyle = '#ff6b6b'; ctx.font = '11px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('error: ' + pg.error, 12, 22); return; }
+    const useGrid = pg.kind === 'curve' || pg.kind === 'pca';
+    const { PX, PY } = this.base(ctx, W, H, useGrid);
+    const clampY = y => Math.max(-0.4, Math.min(1.4, y));
+    if (pg.kind === 'regions') {
+      const g = pg.grid, N = g.length, cw = (PX(1) - PX(0)) / N, ch = (PY(1) - PY(0)) / N;
+      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { ctx.fillStyle = this.hexA(P[g[j][i]] || '#888888', .17); ctx.fillRect(PX(i / N), PY(j / N), cw + 0.6, ch + 0.6); }
+      if (pg.lines) { const dl = (arr, dash, col, wd) => { ctx.setLineDash(dash); ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.beginPath(); arr.forEach((p, i) => { const x = PX(p.x), y = PY(clampY(p.y)); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.setLineDash([]); };
+        dl(pg.lines.up, [4, 4], this.hexA('#e6e6ea', .4), 1.2); dl(pg.lines.dn, [4, 4], this.hexA('#e6e6ea', .4), 1.2); dl(pg.lines.mid, [], '#e6e6ea', 2.2); }
+      pg.points.forEach(p => { ctx.beginPath(); ctx.arc(PX(p.x), PY(p.y), 4, 0, 7); ctx.fillStyle = P[p.c] || '#888'; ctx.fill(); ctx.strokeStyle = 'rgba(8,10,16,.45)'; ctx.lineWidth = .8; ctx.stroke(); });
+    } else if (pg.kind === 'curve') {
+      pg.points.forEach(p => { ctx.beginPath(); ctx.arc(PX(p.x), PY(p.y), 3.6, 0, 7); ctx.fillStyle = '#5b8ef0'; ctx.fill(); });
+      ctx.strokeStyle = '#b57bff'; ctx.lineWidth = 2.6; ctx.beginPath(); pg.curve.forEach((p, i) => { const x = PX(p.x), y = PY(clampY(p.y)); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+    } else if (pg.kind === 'clusters') {
+      pg.points.forEach(p => { if (p.c < 0) { ctx.strokeStyle = '#5a6072'; ctx.lineWidth = 1.5; const s = 3; ctx.beginPath(); ctx.moveTo(PX(p.x) - s, PY(p.y) - s); ctx.lineTo(PX(p.x) + s, PY(p.y) + s); ctx.moveTo(PX(p.x) + s, PY(p.y) - s); ctx.lineTo(PX(p.x) - s, PY(p.y) + s); ctx.stroke(); } else { ctx.beginPath(); ctx.arc(PX(p.x), PY(p.y), 4, 0, 7); ctx.fillStyle = P[p.c % P.length]; ctx.fill(); } });
+      pg.centers.forEach((c, i) => { const col = P[i % P.length]; if (pg.centerType === 'x') { const s = 7; ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.4; ctx.beginPath(); ctx.moveTo(PX(c.x) - s, PY(c.y) - s); ctx.lineTo(PX(c.x) + s, PY(c.y) + s); ctx.moveTo(PX(c.x) + s, PY(c.y) - s); ctx.lineTo(PX(c.x) - s, PY(c.y) + s); ctx.stroke(); ctx.strokeStyle = col; ctx.lineWidth = 1.7; ctx.stroke(); } else { ctx.beginPath(); ctx.arc(PX(c.x), PY(c.y), 8.5, 0, 7); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.6; ctx.stroke(); ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.stroke(); ctx.beginPath(); ctx.arc(PX(c.x), PY(c.y), 4, 0, 7); ctx.fillStyle = col; ctx.fill(); } });
+    } else if (pg.kind === 'pca') {
+      if (pg.proj) pg.proj.forEach(p => { ctx.strokeStyle = this.hexA('#8d93a6', .3); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(PX(p.ox), PY(p.oy)); ctx.lineTo(PX(p.x), PY(p.y)); ctx.stroke(); });
+      pg.points.forEach(p => { ctx.beginPath(); ctx.arc(PX(p.x), PY(p.y), 3.8, 0, 7); ctx.fillStyle = '#5b8ef0'; ctx.fill(); });
+      pg.axes.forEach(a => { ctx.strokeStyle = a.main ? '#b57bff' : this.hexA('#8d93a6', .65); ctx.lineWidth = a.main ? 3 : 1.6; ctx.beginPath(); ctx.moveTo(PX(a.x0), PY(a.y0)); ctx.lineTo(PX(a.x1), PY(a.y1)); ctx.stroke(); });
+      if (pg.proj) pg.proj.forEach(p => { ctx.beginPath(); ctx.arc(PX(p.x), PY(p.y), 3, 0, 7); ctx.fillStyle = '#b57bff'; ctx.fill(); });
+    }
+    const parts = []; if (pg.metric) parts.push(pg.metric.key + ': ' + pg.metric.val); if (pg.metric2) parts.push(pg.metric2.key + ': ' + pg.metric2.val);
+    if (parts.length) { ctx.font = '600 11px JetBrains Mono'; ctx.textAlign = 'right'; ctx.fillStyle = '#eef0f6'; parts.forEach((s, i) => ctx.fillText(s, W - 12, 18 + i * 15)); }
+  }
+  _buildPanel(cfg, lang) {
+    const h = React.createElement, params = this.state.pgParams;
+    const seg = a => ({ fontFamily: "'JetBrains Mono',monospace", fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '7px', cursor: 'pointer', border: 'none', background: a ? 'linear-gradient(135deg,#5b8ef0,#b57bff)' : 'rgba(255,255,255,.05)', color: a ? '#fff' : '#8b8fa3' });
+    const rows = cfg.controls.map(c => {
+      let control, valTxt = '';
+      if (c.kind === 'slider') {
+        const v = params[c.key];
+        valTxt = c.key === 'var_exp' ? Math.pow(10, v).toExponential(0) : (c.step >= 1 ? String(v) : (+v).toFixed(2));
+        control = h('input', { type: 'range', min: c.min, max: c.max, step: c.step, value: v, onChange: e => this.setParam(c.key, parseFloat(e.target.value)), style: { width: '100%', accentColor: '#b57bff', cursor: 'pointer' } });
+      } else if (c.kind === 'toggle') {
+        const v = params[c.key]; valTxt = '';
+        control = h('button', { onClick: () => this.setParam(c.key, !v), style: seg(v) }, v ? 'True' : 'False');
+      } else {
+        control = h('div', { style: { display: 'flex', gap: '6px', flexWrap: 'wrap' } }, cfg && c.options.map(o => h('button', { key: String(o.v), onClick: () => this.setParam(c.key, o.v), style: seg(params[c.key] === o.v) }, o.l ? o.l[lang] : String(o.v))));
+      }
+      const nameRow = h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' } },
+        h('span', { style: { fontFamily: "'JetBrains Mono',monospace", fontSize: '12px', fontWeight: 700, color: '#b57bff' } }, c.name),
+        valTxt ? h('span', { style: { fontFamily: "'JetBrains Mono',monospace", fontSize: '11px', color: '#c7cad3' } }, valTxt) : null);
+      return h('div', { key: c.key, style: { padding: '10px 12px', borderRadius: '11px', background: '#181b23', border: '1px solid #262b38' } }, nameRow, control);
+    });
+    return h('div', { style: { display: 'flex', flexDirection: 'column', gap: '9px' } }, rows);
+  }
+
+  // ---- helpers ----
+  hexA(h, a) { const n = parseInt(h.slice(1), 16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; }
+  eio(u) { u = Math.max(0, Math.min(1, u)); return u < .5 ? 2*u*u : 1 - Math.pow(-2*u+2, 2)/2; }
+  rng(seed) { let s = seed; return () => { s = (s*1103515245+12345) & 0x7fffffff; return s / 0x7fffffff; }; }
+  pts(id, gen) { if (!this._c[id]) this._c[id] = gen(); return this._c[id]; }
+  base(ctx, W, H, grid) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0f1117'; ctx.fillRect(0, 0, W, H);
+    const pad = Math.max(14, W * 0.06);
+    if (grid) {
+      ctx.strokeStyle = '#171b25'; ctx.lineWidth = 1;
+      for (let i = 0; i <= 6; i++) {
+        const gx = pad + i*(W-2*pad)/6, gy = pad + i*(H-2*pad)/6;
+        ctx.beginPath(); ctx.moveTo(gx, pad); ctx.lineTo(gx, H-pad); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(pad, gy); ctx.lineTo(W-pad, gy); ctx.stroke();
+      }
+    }
+    return { pad, PX: nx => pad + nx*(W-2*pad), PY: ny => pad + ny*(H-2*pad) };
+  }
+
+  // ---- animations ----
+  a_linreg(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const P = this.pts('linreg', () => { const r = this.rng(9), a = []; for (let i=0;i<11;i++){ const x=.08+.84*(i/10)+(r()-.5)*.05; a.push({x, y:.74-.52*x+(r()-.5)*.15}); } return a; });
+    const p = (t%4200)/4200, k = p < .6 ? this.eio(p/.6) : 1;
+    const m = .05+(-.57)*k, b = .42+.32*k, yAt = x => b + m*x;
+    ctx.strokeStyle = this.hexA(A,.35); ctx.lineWidth = 1.5;
+    P.forEach(pt => { ctx.beginPath(); ctx.moveTo(PX(pt.x), PY(pt.y)); ctx.lineTo(PX(pt.x), PY(yAt(pt.x))); ctx.stroke(); });
+    ctx.strokeStyle = A; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(PX(0), PY(yAt(0))); ctx.lineTo(PX(1), PY(yAt(1))); ctx.stroke();
+    P.forEach(pt => { ctx.beginPath(); ctx.arc(PX(pt.x), PY(pt.y), 4.5, 0, 7); ctx.fillStyle = '#5b8ef0'; ctx.fill(); });
+  }
+  a_logistic(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const P = this.pts('logi', () => { const r = this.rng(5), a = []; for (let i=0;i<7;i++) a.push({x:.1+r()*.32, y:0}); for (let i=0;i<7;i++) a.push({x:.58+r()*.32, y:1}); return a; });
+    const p = (t%4200)/4200, k = p < .6 ? this.eio(p/.6) : 1, steep = 3+18*k;
+    const sig = x => 1/(1+Math.exp(-steep*(x-.5)));
+    ctx.strokeStyle = this.hexA('#e6e6ea',.14); ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(PX(0), PY(.5)); ctx.lineTo(PX(1), PY(.5)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = A; ctx.lineWidth = 2.6; ctx.beginPath();
+    for (let i=0;i<=60;i++){ const x=i/60, y=1-sig(x); i?ctx.lineTo(PX(x),PY(y)):ctx.moveTo(PX(x),PY(y)); } ctx.stroke();
+    P.forEach(pt => { ctx.beginPath(); ctx.arc(PX(pt.x), PY(1-pt.y*.86-.07), 4.5, 0, 7); ctx.fillStyle = sig(pt.x)>.5?A:'#5b8ef0'; ctx.fill(); });
+  }
+  a_naivebayes(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const sep = .16+.055*Math.sin(t/900), g = (x,mu,s) => Math.exp(-((x-mu)**2)/(2*s*s)), s = .13;
+    ctx.strokeStyle = this.hexA('#e6e6ea',.16); ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(PX(.5), PY(0)); ctx.lineTo(PX(.5), PY(1)); ctx.stroke(); ctx.setLineDash([]);
+    const curve = (mu, col) => {
+      ctx.beginPath(); ctx.moveTo(PX(0), PY(1));
+      for (let i=0;i<=60;i++){ const x=i/60, y=1-g(x,mu,s)*.82-.06; ctx.lineTo(PX(x), PY(y)); }
+      ctx.lineTo(PX(1), PY(1)); ctx.closePath(); ctx.fillStyle = this.hexA(col,.14); ctx.fill();
+      ctx.strokeStyle = col; ctx.lineWidth = 2.2; ctx.beginPath();
+      for (let i=0;i<=60;i++){ const x=i/60, y=1-g(x,mu,s)*.82-.06; i?ctx.lineTo(PX(x),PY(y)):ctx.moveTo(PX(x),PY(y)); } ctx.stroke();
+    };
+    curve(.5-sep, '#5b8ef0'); curve(.5+sep, A);
+  }
+  a_svm(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const P = this.pts('svm9', () => { const r = this.rng(42), gs = () => (r()+r()+r()-1.5)/1.5, a = []; for (let i=0;i<8;i++) a.push({x:.3+gs()*.08, y:.4+gs()*.14, c:0}); for (let i=0;i<8;i++) a.push({x:.7+gs()*.08, y:.6+gs()*.14, c:1}); return a; });
+    const th = 8*Math.PI/180, nrm = {x:Math.cos(th), y:Math.sin(th)}, dir = {x:-Math.sin(th), y:Math.cos(th)};
+    let dmin = 1e9; P.forEach(pt => { const d = Math.abs((pt.x-.5)*nrm.x+(pt.y-.5)*nrm.y); if (d<dmin) dmin = d; });
+    const breathe = (1-Math.cos((t%4200)/4200*6.283))/2, mrg = dmin*(.12+.88*breathe), full = breathe>.9;
+    const line = o => { const a = {x:.5+dir.x*-1.3+nrm.x*o, y:.5+dir.y*-1.3+nrm.y*o}, b = {x:.5+dir.x*1.3+nrm.x*o, y:.5+dir.y*1.3+nrm.y*o}; return [[PX(a.x),PY(a.y)],[PX(b.x),PY(b.y)]]; };
+    const bp = line(mrg), bm = line(-mrg);
+    ctx.fillStyle = this.hexA(A,.09); ctx.beginPath(); ctx.moveTo(bp[0][0],bp[0][1]); ctx.lineTo(bp[1][0],bp[1][1]); ctx.lineTo(bm[1][0],bm[1][1]); ctx.lineTo(bm[0][0],bm[0][1]); ctx.closePath(); ctx.fill();
+    ctx.setLineDash([5,5]); ctx.strokeStyle = this.hexA(A,.55); ctx.lineWidth = 1.4; [bp,bm].forEach(l => { ctx.beginPath(); ctx.moveTo(l[0][0],l[0][1]); ctx.lineTo(l[1][0],l[1][1]); ctx.stroke(); }); ctx.setLineDash([]);
+    const b0 = line(0); ctx.strokeStyle = '#e6e6ea'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(b0[0][0],b0[0][1]); ctx.lineTo(b0[1][0],b0[1][1]); ctx.stroke();
+    P.forEach(pt => { const d = Math.abs((pt.x-.5)*nrm.x+(pt.y-.5)*nrm.y), sv = full && d <= mrg*1.12; if (sv) { ctx.beginPath(); ctx.arc(PX(pt.x),PY(pt.y),8,0,7); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); } ctx.beginPath(); ctx.arc(PX(pt.x),PY(pt.y),4.6,0,7); ctx.fillStyle = pt.c?A:'#5b8ef0'; ctx.fill(); });
+  }
+  a_tree(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, false);
+    const seg = (t%4800)/4800*4;
+    const rects = [{x0:0,y0:0,x1:.5,y1:.55,c:'#5b8ef0'},{x0:0,y0:.55,x1:.5,y1:1,c:A},{x0:.5,y0:0,x1:.75,y1:.4,c:A},{x0:.5,y0:.4,x1:1,y1:1,c:'#5b8ef0'},{x0:.75,y0:0,x1:1,y1:.4,c:'#5b8ef0'}];
+    rects.forEach(r => { ctx.fillStyle = this.hexA(r.c,.13); ctx.fillRect(PX(r.x0), PY(r.y0), PX(r.x1)-PX(r.x0), PY(r.y1)-PY(r.y0)); });
+    const splits = [{v:1,at:.5,a:0,b:1},{v:0,at:.55,a:0,b:.5},{v:0,at:.4,a:.5,b:1},{v:1,at:.75,a:0,b:.4}];
+    ctx.strokeStyle = A; ctx.lineWidth = 2.2;
+    splits.forEach((s,i) => { if (seg < i) return; const grow = Math.min(1, seg-i);
+      if (s.v) { const x = PX(s.at); ctx.beginPath(); ctx.moveTo(x, PY(s.a)); ctx.lineTo(x, PY(s.a+(s.b-s.a)*grow)); ctx.stroke(); }
+      else { const y = PY(s.at); ctx.beginPath(); ctx.moveTo(PX(s.a), y); ctx.lineTo(PX(s.a+(s.b-s.a)*grow), y); ctx.stroke(); } });
+    const P = this.pts('tree', () => { const r = this.rng(3), a = []; for (let i=0;i<22;i++) a.push({x:r(), y:r()}); return a; });
+    P.forEach(pt => { const rr = rects.find(R => pt.x>=R.x0&&pt.x<R.x1&&pt.y>=R.y0&&pt.y<R.y1) || rects[0]; ctx.beginPath(); ctx.arc(PX(pt.x), PY(pt.y), 4, 0, 7); ctx.fillStyle = rr.c; ctx.fill(); });
+  }
+  a_forest(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, false);
+    const votes = [0,0,1,0,1], cols = ['#5b8ef0', A], n = votes.length;
+    const reveal = Math.min(n, Math.floor((t%5200)/5200*(n+1.5)));
+    const miniTree = (cx, on, col) => {
+      ctx.strokeStyle = on?col:this.hexA('#8d93a6',.35); ctx.lineWidth = 1.5;
+      const root=[cx,.1], l=[cx-.05,.24], rr=[cx+.05,.24], ll=[cx-.08,.4], lr=[cx-.02,.4], rl=[cx+.02,.4], rrr=[cx+.08,.4];
+      const seg = (a,b) => { ctx.beginPath(); ctx.moveTo(PX(a[0]),PY(a[1])); ctx.lineTo(PX(b[0]),PY(b[1])); ctx.stroke(); };
+      seg(root,l); seg(root,rr); seg(l,ll); seg(l,lr); seg(rr,rl); seg(rr,rrr);
+      [root,l,rr].forEach(nd => { ctx.beginPath(); ctx.arc(PX(nd[0]),PY(nd[1]),3.4,0,7); ctx.fillStyle = on?col:this.hexA('#8d93a6',.4); ctx.fill(); });
+      [ll,lr,rl,rrr].forEach(nd => { ctx.beginPath(); ctx.arc(PX(nd[0]),PY(nd[1]),2.6,0,7); ctx.fillStyle = on?col:this.hexA('#8d93a6',.3); ctx.fill(); });
+    };
+    for (let i=0;i<n;i++){ const cx = .12+i*(.76/(n-1)), on = i<reveal; miniTree(cx, on, cols[votes[i]]);
+      if (on){ ctx.beginPath(); ctx.arc(PX(cx),PY(.54),6.5,0,7); ctx.fillStyle = cols[votes[i]]; ctx.fill(); ctx.strokeStyle = this.hexA('#ffffff',.5); ctx.lineWidth = 1; ctx.stroke(); } }
+    const rv = votes.slice(0, reveal), c0 = rv.filter(v=>!v).length, c1 = rv.filter(v=>v).length, done = reveal>=n;
+    ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillStyle = this.hexA('#8d93a6',.8); ctx.fillText('votos de los árboles', PX(.5), PY(.66));
+    const bw = .34, bx = .5-bw/2, wpx = PX(bx+bw)-PX(bx), by = PY(.76), tot = Math.max(1, rv.length);
+    ctx.fillStyle = '#5b8ef0'; ctx.fillRect(PX(bx), by, wpx*(c0/tot), 13);
+    ctx.fillStyle = A; ctx.fillRect(PX(bx)+wpx*(c0/tot), by, wpx*(c1/tot), 13);
+    ctx.strokeStyle = '#2a2f3a'; ctx.lineWidth = 1; ctx.strokeRect(PX(bx), by, wpx, 13);
+    if (done){ const win = c0>=c1; ctx.fillStyle = win?'#5b8ef0':A; ctx.font = '600 12px Space Grotesk'; ctx.fillText('mayoría → '+(win?'clase A':'clase B')+'  ('+c0+' vs '+c1+')', PX(.5), PY(.95)); }
+  }
+  a_gboost(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const target = x => .5+.28*Math.sin(x*5+.4);
+    const P = this.pts('gb9', () => { const r = this.rng(80), a = []; for (let i=0;i<12;i++){ const x=.06+.88*(i/11); a.push({x, y:target(x)+(r()-.5)*.12}); } return a; });
+    const mean = P.reduce((s,p)=>s+p.y,0)/P.length, stages = 6;
+    const stage = Math.floor((t%5600)/5600*(stages+1)), frac = Math.min(1, stage/stages), pred = x => mean+(target(x)-mean)*frac;
+    ctx.strokeStyle = this.hexA('#ff6b6b',.55); ctx.lineWidth = 2; ctx.lineCap = 'round';
+    P.forEach(pt => { ctx.beginPath(); ctx.moveTo(PX(pt.x),PY(pt.y)); ctx.lineTo(PX(pt.x),PY(pred(pt.x))); ctx.stroke(); }); ctx.lineCap = 'butt';
+    ctx.strokeStyle = A; ctx.lineWidth = 2.6; ctx.beginPath();
+    for (let i=0;i<=60;i++){ const x=i/60; i?ctx.lineTo(PX(x),PY(pred(x))):ctx.moveTo(PX(x),PY(pred(x))); } ctx.stroke();
+    P.forEach(pt => { ctx.beginPath(); ctx.arc(PX(pt.x),PY(pt.y),4,0,7); ctx.fillStyle = '#5b8ef0'; ctx.fill(); });
+    ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.font = '10px JetBrains Mono'; ctx.textAlign = 'left';
+    ctx.fillText(stage===0?'F₀ = media':('+ árbol '+stage+' → corrige residuo'), PX(.03), PY(.07));
+    for (let i=0;i<stages;i++){ ctx.beginPath(); ctx.arc(PX(.72)+i*11, PY(.07), 3, 0, 7); ctx.fillStyle = i<stage?A:this.hexA('#8d93a6',.3); ctx.fill(); }
+  }
+  a_lightgbm(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, false);
+    const nodes = [{x:.5,y:.12,p:-1},{x:.32,y:.28,p:0},{x:.68,y:.28,p:0},{x:.2,y:.44,p:1},{x:.44,y:.44,p:1},{x:.1,y:.6,p:3},{x:.3,y:.6,p:3}];
+    const grown = [0, 1, 3];
+    const shown = Math.min(grown.length, Math.floor((t%5200)/5200*(grown.length+1)));
+    const active = new Set([0]);
+    for (let s=0;s<shown;s++){ const leaf = grown[s]; nodes.forEach((n,i)=>{ if (n.p===leaf) active.add(i); }); }
+    const nextLeaf = shown<grown.length ? grown[shown] : -1;
+    ctx.strokeStyle = this.hexA('#8d93a6',.5); ctx.lineWidth = 1.6;
+    nodes.forEach((n,i) => { if (!active.has(i)||n.p<0) return; const pa = nodes[n.p]; ctx.beginPath(); ctx.moveTo(PX(pa.x),PY(pa.y)); ctx.lineTo(PX(n.x),PY(n.y)); ctx.stroke(); });
+    nodes.forEach((n,i) => { if (!active.has(i)) return; const isNext = i===nextLeaf;
+      if (isNext){ ctx.beginPath(); ctx.arc(PX(n.x),PY(n.y),9*(1+.3*Math.sin(t/180)),0,7); ctx.strokeStyle = this.hexA(A,.6); ctx.lineWidth = 1.4; ctx.stroke(); }
+      ctx.beginPath(); ctx.arc(PX(n.x),PY(n.y),6,0,7); ctx.fillStyle = i===0?'#e6e6ea':A; ctx.fill(); });
+    const bins = 12, hist = this.pts('lgb9', () => { const rr = this.rng(21), h = []; for (let i=0;i<bins;i++) h.push(.25+rr()*.75); return h; });
+    const bw = (PX(1)-PX(0))/bins, band = (PY(1)-PY(.78));
+    for (let i=0;i<bins;i++){ const hh = hist[i]*band*.9; ctx.fillStyle = this.hexA(A,.22); ctx.fillRect(PX(0)+i*bw+2, PY(1)-hh, bw-3, hh); }
+    ctx.fillStyle = this.hexA('#8d93a6',.8); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('histograma de features', PX(0), PY(.74));
+    ctx.textAlign = 'right'; ctx.fillStyle = this.hexA(A,.9); ctx.fillText('leaf-wise ▸ mejor hoja', PX(1), PY(.08));
+  }
+  a_xgboost(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, false);
+    const nd = { root:[0,-1.1], l:[-1,0], r:[1,0], ll:[-1.5,1], lr:[-.5,1], rl:[.5,1], rr:[1.5,1] };
+    const tree = (cx, cy, sc, lit, prune) => {
+      const p = q => ({ x:cx+q[0]*sc, y:cy+q[1]*sc }), col = lit?A:this.hexA('#8d93a6',.4);
+      const edge = (a,b,cut) => { const A1=p(nd[a]),B=p(nd[b]); ctx.strokeStyle = cut?this.hexA('#ff6b6b',.75):col; ctx.setLineDash(cut?[3,3]:[]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(PX(A1.x),PY(A1.y)); ctx.lineTo(PX(B.x),PY(B.y)); ctx.stroke(); ctx.setLineDash([]); };
+      edge('root','l'); edge('root','r'); edge('l','ll'); edge('l','lr'); edge('r','rl'); edge('r','rr', prune);
+      Object.keys(nd).forEach(kk => { if (prune && kk==='rr') return; const q = p(nd[kk]); ctx.beginPath(); ctx.arc(PX(q.x),PY(q.y),3.2,0,7); ctx.fillStyle = col; ctx.fill(); });
+      if (prune){ const q = p(nd.rr); ctx.strokeStyle = this.hexA('#ff6b6b',.85); ctx.lineWidth = 1.6; const s=3.5; ctx.beginPath(); ctx.moveTo(PX(q.x)-s,PY(q.y)-s); ctx.lineTo(PX(q.x)+s,PY(q.y)+s); ctx.moveTo(PX(q.x)+s,PY(q.y)-s); ctx.lineTo(PX(q.x)-s,PY(q.y)+s); ctx.stroke(); }
+    };
+    const cyc = (t%4200)/4200*3, lit = Math.floor(cyc), pruneOn = (cyc - lit) > .4;
+    tree(.16,.42,.075, lit>=0, false);
+    ctx.fillStyle = this.hexA('#e6e6ea',.55); ctx.font = '15px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillText('+', PX(.33), PY(.42));
+    tree(.5,.42,.075, lit>=1, false);
+    ctx.fillText('+', PX(.67), PY(.42));
+    tree(.84,.42,.075, lit>=2, lit>=2 && pruneOn);
+    ctx.fillStyle = this.hexA('#ff6b6b',.85); ctx.font = '9px JetBrains Mono'; ctx.fillText('poda γ (baja ganancia)', PX(.84), PY(.9));
+    ctx.fillStyle = this.hexA('#8d93a6',.8); ctx.textAlign = 'left'; ctx.fillText('F = Σ árboles + regularización', PX(.03), PY(.08));
+  }
+  a_kmeans(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const blobs = [[.28,.35],[.72,.3],[.55,.72]];
+    const P = this.pts('km', () => { const r = this.rng(8), gs = () => (r()+r()-1)*.5, a = []; blobs.forEach((b,ci) => { for (let i=0;i<8;i++) a.push({x:b[0]+gs()*.16, y:b[1]+gs()*.16, c:ci}); }); return a; });
+    const p = (t%4600)/4600, k = this.eio(Math.min(1,p/.7)), starts = [[.5,.2],[.3,.7],[.7,.6]];
+    const cents = blobs.map((b,i) => ({x:starts[i][0]+(b[0]-starts[i][0])*k, y:starts[i][1]+(b[1]-starts[i][1])*k}));
+    const cols = ['#5b8ef0', A, '#a78bfa'];
+    P.forEach(pt => { let bi=0,bd=1e9; cents.forEach((c,i) => { const d=(c.x-pt.x)**2+(c.y-pt.y)**2; if (d<bd){bd=d;bi=i;} }); pt.a=bi; });
+    P.forEach(pt => { ctx.strokeStyle = this.hexA(cols[pt.a],.2); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(PX(pt.x),PY(pt.y)); ctx.lineTo(PX(cents[pt.a].x),PY(cents[pt.a].y)); ctx.stroke(); });
+    P.forEach(pt => { ctx.beginPath(); ctx.arc(PX(pt.x),PY(pt.y),4,0,7); ctx.fillStyle = cols[pt.a]; ctx.fill(); });
+    cents.forEach((c,i) => { const s=7; ctx.strokeStyle='#fff'; ctx.lineWidth=3.2; ctx.beginPath(); ctx.moveTo(PX(c.x)-s,PY(c.y)-s); ctx.lineTo(PX(c.x)+s,PY(c.y)+s); ctx.moveTo(PX(c.x)+s,PY(c.y)-s); ctx.lineTo(PX(c.x)-s,PY(c.y)+s); ctx.stroke(); ctx.strokeStyle=cols[i]; ctx.lineWidth=1.6; ctx.stroke(); });
+  }
+  a_kmedoids(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const blobs = [[.28,.36],[.72,.32],[.55,.72]], cols = ['#5b8ef0', A, '#2fd4c4'];
+    const P = this.pts('kmed9', () => { const r = this.rng(14), gs = () => (r()+r()-1)*.5, a = []; blobs.forEach((b,ci) => { for (let i=0;i<7;i++) a.push({x:b[0]+gs()*.15, y:b[1]+gs()*.15, c:ci}); }); return a; });
+    const groups = blobs.map((_,ci) => P.filter(pt => pt.c===ci));
+    const step = Math.floor(t/1900), sub = (t%1900)/1900;
+    const meds = groups.map(grp => ({ cur: grp[step % grp.length], nxt: grp[(step+1) % grp.length] }));
+    P.forEach(pt => { const m = meds[pt.c].cur; ctx.strokeStyle = this.hexA(cols[pt.c],.16); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(PX(pt.x),PY(pt.y)); ctx.lineTo(PX(m.x),PY(m.y)); ctx.stroke(); });
+    P.forEach(pt => { ctx.beginPath(); ctx.arc(PX(pt.x),PY(pt.y),3.8,0,7); ctx.fillStyle = cols[pt.c]; ctx.fill(); });
+    meds.forEach((m, ci) => { if (sub>.72){ const g = 1+.4*Math.sin(t/120); ctx.beginPath(); ctx.arc(PX(m.nxt.x),PY(m.nxt.y),7*g,0,7); ctx.strokeStyle = this.hexA('#ffffff',.7); ctx.lineWidth = 1.4; ctx.stroke(); }
+      ctx.beginPath(); ctx.arc(PX(m.cur.x),PY(m.cur.y),8,0,7); ctx.fillStyle = cols[ci]; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.2; ctx.stroke(); });
+    ctx.fillStyle = this.hexA('#8d93a6',.8); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('medoide = punto real ▸ swap', PX(.02), PY(.06));
+  }
+  a_dbscan(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const data = this.pts('db9', () => {
+      const r = this.rng(19), a = [];
+      for (let i=0;i<20;i++){ const an = r()*6.283, rad = Math.sqrt(r())*.2; a.push({x:.4+Math.cos(an)*rad*1.05, y:.52+Math.sin(an)*rad*1.25, noise:false}); }
+      for (let i=0;i<7;i++){ const an = r()*6.283, rad = .32+r()*.12; a.push({x:.5+Math.cos(an)*rad, y:.5+Math.sin(an)*rad*.85, noise:true}); }
+      const eps = .13, order = [0], seen = new Set([0]);
+      for (let h=0; h<order.length; h++){ const c = a[order[h]]; a.forEach((p,idx) => { if (seen.has(idx)||p.noise) return; if (Math.hypot(p.x-c.x,p.y-c.y)<eps){ seen.add(idx); order.push(idx); } }); }
+      return { a, order, eps };
+    });
+    const { a, order, eps } = data, rpx = eps*(PX(1)-PX(0));
+    const rev = Math.floor((order.length+3) * this.eio((t%5200)/5200)), inC = new Set(order.slice(0, rev));
+    a.forEach((p,idx) => { if (inC.has(idx)){ ctx.beginPath(); ctx.arc(PX(p.x),PY(p.y),rpx,0,7); ctx.fillStyle = this.hexA(A,.05); ctx.strokeStyle = this.hexA(A,.18); ctx.lineWidth = 1; ctx.fill(); ctx.stroke(); } });
+    ctx.strokeStyle = this.hexA(A,.4); ctx.lineWidth = 1.3;
+    order.slice(0,rev).forEach(idx => { const p = a[idx]; a.forEach((q,j) => { if (!inC.has(j)||j<=idx) return; if (Math.hypot(p.x-q.x,p.y-q.y)<eps){ ctx.beginPath(); ctx.moveTo(PX(p.x),PY(p.y)); ctx.lineTo(PX(q.x),PY(q.y)); ctx.stroke(); } }); });
+    a.forEach((p,idx) => { if (p.noise){ ctx.strokeStyle = '#5a6072'; ctx.lineWidth = 1.5; const s=3; ctx.beginPath(); ctx.moveTo(PX(p.x)-s,PY(p.y)-s); ctx.lineTo(PX(p.x)+s,PY(p.y)+s); ctx.moveTo(PX(p.x)+s,PY(p.y)-s); ctx.lineTo(PX(p.x)-s,PY(p.y)+s); ctx.stroke(); }
+      else { ctx.beginPath(); ctx.arc(PX(p.x),PY(p.y),4,0,7); ctx.fillStyle = inC.has(idx)?A:this.hexA('#8d93a6',.5); ctx.fill(); } });
+    ctx.fillStyle = this.hexA('#8d93a6',.8); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('densidad → clúster', PX(0), PY(.06)); ctx.textAlign = 'right'; ctx.fillText('✕ ruido', PX(1), PY(.06));
+  }
+  a_hdbscan(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const d = this.pts('hdb10', () => {
+      const r = this.rng(23), a = [];
+      for (let i=0;i<11;i++) a.push({x:.28+(r()-.5)*.14, y:.38+(r()-.5)*.16, c:0});   // dense
+      for (let i=0;i<10;i++) a.push({x:.7+(r()-.5)*.26, y:.62+(r()-.5)*.26, c:1});     // sparse
+      const noise = [[.12,.82],[.9,.16],[.5,.12],[.86,.88]];
+      noise.forEach(nn => a.push({x:nn[0], y:nn[1], c:-1}));
+      const edges = [];                                                                 // 2 nearest same-cluster
+      a.forEach((p,i) => { if (p.c<0) return; const ds = a.map((q,j)=>({j,d:(i===j||q.c!==p.c)?9:Math.hypot(p.x-q.x,p.y-q.y)})).sort((u,v)=>u.d-v.d); edges.push([i,ds[0].j]); edges.push([i,ds[1].j]); });
+      const centers = [[.28,.38],[.7,.62]];
+      return { a, edges, centers };
+    });
+    const { a, edges, centers } = d, cols = ['#5b8ef0', A];
+    const reveal = this.eio(Math.min(1, (t%5200)/5200/.7)), pulse = 1+.04*Math.sin(t/500);
+    centers.forEach((c,i) => { ctx.beginPath(); ctx.ellipse(PX(c[0]),PY(c[1]),(i?.2:.13)*(PX(1)-PX(0))*pulse,(i?.18:.13)*(PY(1)-PY(0))*pulse,0,0,7); ctx.fillStyle = this.hexA(cols[i],.07); ctx.strokeStyle = this.hexA(cols[i],.28); ctx.setLineDash([4,4]); ctx.lineWidth = 1.2; ctx.fill(); ctx.stroke(); ctx.setLineDash([]); });
+    const shown = Math.floor(edges.length*reveal);
+    edges.slice(0,shown).forEach(([i,j]) => { ctx.strokeStyle = this.hexA(cols[a[i].c],.45); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(PX(a[i].x),PY(a[i].y)); ctx.lineTo(PX(a[j].x),PY(a[j].y)); ctx.stroke(); });
+    a.forEach(p => { if (p.c<0){ ctx.strokeStyle = '#5a6072'; ctx.lineWidth = 1.5; const s=3.2; ctx.beginPath(); ctx.moveTo(PX(p.x)-s,PY(p.y)-s); ctx.lineTo(PX(p.x)+s,PY(p.y)+s); ctx.moveTo(PX(p.x)+s,PY(p.y)-s); ctx.lineTo(PX(p.x)-s,PY(p.y)+s); ctx.stroke(); }
+      else { ctx.beginPath(); ctx.arc(PX(p.x),PY(p.y),4,0,7); ctx.fillStyle = cols[p.c]; ctx.fill(); } });
+    ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('densidad variable ▸ clústeres estables', PX(0), PY(.06));
+  }
+  a_pca(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const trueAng = 30*Math.PI/180;
+    const P = this.pts('pca9', () => { const r = this.rng(31), gs = () => (r()+r()+r()-1.5)/1.5, a = []; for (let i=0;i<26;i++) a.push({u:gs()*.3, v:gs()*.075}); return a; });
+    const rot = (u,v,ang) => ({ x:.5+u*Math.cos(ang)-v*Math.sin(ang), y:.5+u*Math.sin(ang)+v*Math.cos(ang) });
+    const ph = (t%6000)/6000, searching = ph<.5, k = this.eio(Math.min(1, ph/.5)), ang = -.5+(trueAng+.5)*k, proj = ph>.62?this.eio(Math.min(1,(ph-.62)/.32)):0;
+    let vv = 0; P.forEach(pt => { const pr = pt.u*Math.cos(ang-trueAng); vv += pr*pr; }); vv = Math.sqrt(vv/P.length);
+    const d0 = rot(-.42,0,ang), d1 = rot(.42,0,ang); ctx.strokeStyle = this.hexA(A,.28); ctx.setLineDash([5,5]); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(PX(d0.x),PY(d0.y)); ctx.lineTo(PX(d1.x),PY(d1.y)); ctx.stroke(); ctx.setLineDash([]);
+    const pc2e = rot(0,.15,ang); ctx.strokeStyle = this.hexA('#8d93a6',.55); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(PX(.5),PY(.5)); ctx.lineTo(PX(pc2e.x),PY(pc2e.y)); ctx.stroke();
+    const pc1 = rot(.2+.2*Math.min(1,vv/.19),0,ang); ctx.strokeStyle = A; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(PX(.5),PY(.5)); ctx.lineTo(PX(pc1.x),PY(pc1.y)); ctx.stroke(); ctx.beginPath(); ctx.arc(PX(pc1.x),PY(pc1.y),4,0,7); ctx.fillStyle = A; ctx.fill();
+    P.forEach(pt => { const o = rot(pt.u,pt.v,trueAng), pr = rot(pt.u,0,trueAng), x = o.x+(pr.x-o.x)*proj, y = o.y+(pr.y-o.y)*proj;
+      if (proj>0){ ctx.strokeStyle = this.hexA('#8d93a6',.18); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(PX(o.x),PY(o.y)); ctx.lineTo(PX(pr.x),PY(pr.y)); ctx.stroke(); }
+      ctx.beginPath(); ctx.arc(PX(x),PY(y),4,0,7); ctx.fillStyle = '#5b8ef0'; ctx.fill(); });
+    ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText(searching?'buscando máx. varianza…':(proj>0?'proyectar sobre PC1':'PC1 alineada'), PX(.03), PY(.06));
+  }
+  a_tsne(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const targets = [[.3,.34],[.72,.36],[.5,.72]], cols = [A, '#5b8ef0', '#2fd4c4'];
+    const P = this.pts('tsne9', () => { const r = this.rng(37), a = []; for (let i=0;i<27;i++){ const c=i%3; a.push({rx:.15+r()*.7, ry:.15+r()*.7, c, ox:targets[c][0]+(r()-.5)*.15, oy:targets[c][1]+(r()-.5)*.15, ph:r()*6.28}); } return a; });
+    const ph = (t%6000)/6000, k = this.eio(Math.min(1, ph/.75)), settled = k>.85;
+    const pos = P.map(pt => ({ x:pt.rx+(pt.ox-pt.rx)*k+(settled?.006*Math.sin(t/400+pt.ph):0), y:pt.ry+(pt.oy-pt.ry)*k+(settled?.006*Math.cos(t/400+pt.ph):0), c:pt.c }));
+    for (let i=0;i<pos.length;i++) for (let j=i+1;j<pos.length;j++){ if (pos[i].c!==pos[j].c) continue; const dd = Math.hypot(pos[i].x-pos[j].x,pos[i].y-pos[j].y); if (dd<.16){ ctx.strokeStyle = this.hexA(cols[pos[i].c], .3*(1-dd/.16)); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(PX(pos[i].x),PY(pos[i].y)); ctx.lineTo(PX(pos[j].x),PY(pos[j].y)); ctx.stroke(); } }
+    pos.forEach(pt => { ctx.beginPath(); ctx.arc(PX(pt.x),PY(pt.y),4,0,7); ctx.fillStyle = cols[pt.c]; ctx.fill(); });
+    ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('vecinos se atraen · lejanos se repelen', PX(.03), PY(.06));
+  }
+  a_umap(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const targets = [[.3,.36],[.72,.34],[.52,.72]], cols = [A, '#5b8ef0', '#2fd4c4'];
+    const d = this.pts('umap9', () => {
+      const r = this.rng(41), a = [];
+      for (let i=0;i<24;i++){ const c=i%3; a.push({rx:.15+r()*.7, ry:.15+r()*.7, c, ox:targets[c][0]+(r()-.5)*.14, oy:targets[c][1]+(r()-.5)*.14}); }
+      const edges = [];
+      a.forEach((p,i) => { const ds = a.map((q,j)=>({j,d:(i===j||q.c!==p.c)?9:Math.hypot(p.ox-q.ox,p.oy-q.oy)})).sort((u,v)=>u.d-v.d); edges.push([i,ds[0].j]); edges.push([i,ds[1].j]); });
+      return { a, edges };
+    });
+    const { a, edges } = d, ph = (t%6000)/6000, k = this.eio(Math.min(1, Math.max(0,(ph-.15)/.65)));
+    const pos = a.map(pt => ({ x:pt.rx+(pt.ox-pt.rx)*k, y:pt.ry+(pt.oy-pt.ry)*k, c:pt.c }));
+    edges.forEach(([i,j]) => { ctx.strokeStyle = this.hexA(cols[a[i].c], .35); ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(PX(pos[i].x),PY(pos[i].y)); ctx.lineTo(PX(pos[j].x),PY(pos[j].y)); ctx.stroke(); });
+    pos.forEach(pt => { ctx.beginPath(); ctx.arc(PX(pt.x),PY(pt.y),4,0,7); ctx.fillStyle = cols[pt.c]; ctx.fill(); });
+    ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('grafo k-NN fijo ▸ se despliega', PX(.03), PY(.06));
+  }
+  a_densenn(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, false);
+    const layers = [4,5,5,3], xs = layers.map((_,i) => .12+i*(.76/(layers.length-1)));
+    const np = layers.map((n,li) => { const arr = []; for (let i=0;i<n;i++) arr.push({x:xs[li], y:.15+(n===1?.35:i*(.7/(n-1)))}); return arr; });
+    const pulse = (t/900)%1;
+    for (let li=0;li<layers.length-1;li++) np[li].forEach(a => np[li+1].forEach(b => { const on = Math.abs(pulse-li/(layers.length-1))<.14; ctx.strokeStyle = on?this.hexA(A,.55):this.hexA('#8d93a6',.14); ctx.lineWidth = on?1.6:1; ctx.beginPath(); ctx.moveTo(PX(a.x),PY(a.y)); ctx.lineTo(PX(b.x),PY(b.y)); ctx.stroke(); }));
+    np.forEach((layer,li) => { const on = Math.abs(pulse-li/(layers.length-1))<.14; layer.forEach(n => { ctx.beginPath(); ctx.arc(PX(n.x),PY(n.y),7,0,7); ctx.fillStyle = on?A:'#1c2029'; ctx.strokeStyle = on?A:'#3a4150'; ctx.lineWidth = 2; ctx.fill(); ctx.stroke(); }); });
+  }
+  a_cnn(ctx, W, H, t, A) {
+    const { PX } = this.base(ctx, W, H, false);
+    const g = 6, cell = Math.min((H*.62)/g, (W*.38)/g), ox = PX(.03), oy = (H-cell*g)/2;
+    const img = this.pts('cnnImg', () => { const r = this.rng(6), a = []; for (let i=0;i<g*g;i++) a.push(r()>.62?1:0); return a; });
+    for (let y=0;y<g;y++) for (let x=0;x<g;x++){ ctx.fillStyle = img[y*g+x]?this.hexA('#5b8ef0',.8):'#12151d'; ctx.strokeStyle = '#222a36'; ctx.lineWidth = 1; ctx.fillRect(ox+x*cell,oy+y*cell,cell-1,cell-1); ctx.strokeRect(ox+x*cell,oy+y*cell,cell-1,cell-1); }
+    const steps = g-2, idx = Math.floor((t/500)%(steps*steps)), kx = idx%steps, ky = Math.floor(idx/steps);
+    ctx.strokeStyle = A; ctx.lineWidth = 2.4; ctx.strokeRect(ox+kx*cell,oy+ky*cell,cell*3,cell*3);
+    const fcell = cell*.9, fx = ox+g*cell+Math.max(cell,W*.07), fy = (H-fcell*steps)/2;
+    for (let y=0;y<steps;y++) for (let x=0;x<steps;x++){ const done = (y<ky)||(y===ky&&x<=kx); ctx.fillStyle = done?this.hexA(A,.5):'#12151d'; ctx.strokeStyle = '#222a36'; ctx.fillRect(fx+x*fcell,fy+y*fcell,fcell-1,fcell-1); ctx.strokeRect(fx+x*fcell,fy+y*fcell,fcell-1,fcell-1); }
+    ctx.strokeStyle = this.hexA('#8d93a6',.5); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(ox+g*cell+4,H/2); ctx.lineTo(fx-4,H/2); ctx.stroke();
+  }
+  a_lstm(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, false);
+    const n = 4, cyP = PY(.52), boxW = (PX(1)-PX(0))*.15, boxH = (PY(1)-PY(0))*.24, memY = PY(.26), inY = PY(.82);
+    ctx.fillStyle = this.hexA(A,.9); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('Cₜ · memoria', PX(.04), PY(.11));
+    ctx.strokeStyle = this.hexA(A,.7); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(PX(.05),memY); ctx.lineTo(PX(.95),memY); ctx.stroke();
+    const cur = (t/1500)%n, gates = ['f','i','o'], gcol = ['#ff8b6b','#5b8ef0','#2fd4c4'];
+    for (let i=0;i<n;i++){ const cxP = PX(.18)+i*((PX(.82)-PX(.18))/(n-1)), act = 1-Math.min(1,Math.abs(cur-i)*1.4);
+      const mem = .35+.5*(.5+.5*Math.sin(i*1.4+1)), mh = mem*13; ctx.fillStyle = this.hexA(A,.9); ctx.fillRect(cxP-7, memY, 14, mh);
+      ctx.strokeStyle = this.hexA('#8d93a6',.4); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(cxP, cyP-boxH/2); ctx.lineTo(cxP, memY); ctx.stroke();
+      ctx.strokeStyle = act>.3?this.hexA(A,.85):'#3a4150'; ctx.lineWidth = 1.8; ctx.fillStyle = '#141821'; ctx.beginPath(); ctx.rect(cxP-boxW/2, cyP-boxH/2, boxW, boxH); ctx.fill(); ctx.stroke();
+      gates.forEach((g,gi) => { const gx = cxP-boxW/2+boxW*(gi+1)/4, on = act*(.5+.5*Math.sin(t/300+gi*2)); ctx.beginPath(); ctx.arc(gx, cyP, 4, 0, 7); ctx.fillStyle = this.hexA(gcol[gi], .3+.7*on); ctx.fill(); });
+      ctx.beginPath(); ctx.arc(cxP, inY, 5, 0, 7); ctx.fillStyle = act>.3?'#e6e6ea':'#1c2029'; ctx.strokeStyle = '#3a4150'; ctx.lineWidth = 1.4; ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = this.hexA('#8d93a6',.35); ctx.beginPath(); ctx.moveTo(cxP, inY-5); ctx.lineTo(cxP, cyP+boxH/2); ctx.stroke(); }
+    ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.fillText('xₜ entrada', PX(.04), PY(.99));
+    let lx = PX(.52); ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.fillText('puertas', lx, PY(.99)); lx += 46;
+    gates.forEach((g,gi) => { ctx.beginPath(); ctx.arc(lx, PY(.99)-3, 3.5, 0, 7); ctx.fillStyle = gcol[gi]; ctx.fill(); ctx.fillStyle = this.hexA(gcol[gi],.95); ctx.fillText(g, lx+6, PY(.99)); lx += 24; });
+  }
+  a_autoencoder(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, false);
+    const layers = [5,3,1,3,5], xs = layers.map((_,i) => .1+i*(.8/(layers.length-1)));
+    const np = layers.map((n,li) => { const arr = []; for (let i=0;i<n;i++) arr.push({x:xs[li], y:.5+(n===1?0:(i-(n-1)/2)*(.62/Math.max(1,n-1)))}); return arr; });
+    const pulse = (t/1300)%1;
+    for (let li=0;li<layers.length-1;li++) np[li].forEach(a => np[li+1].forEach(b => { const on = Math.abs(pulse-li/(layers.length-1))<.16; ctx.strokeStyle = on?this.hexA(A,.5):this.hexA('#8d93a6',.12); ctx.lineWidth = on?1.5:.9; ctx.beginPath(); ctx.moveTo(PX(a.x),PY(a.y)); ctx.lineTo(PX(b.x),PY(b.y)); ctx.stroke(); }));
+    np.forEach((layer,li) => { const bott = li===2; layer.forEach(n => { ctx.beginPath(); ctx.arc(PX(n.x),PY(n.y),bott?8:6,0,7); ctx.fillStyle = bott?A:'#1c2029'; ctx.strokeStyle = bott?A:'#3a4150'; ctx.lineWidth = 2; ctx.fill(); ctx.stroke(); }); });
+    ctx.fillStyle = this.hexA('#8d93a6',.7); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillText('encoder', PX(.24), PY(.97)); ctx.fillText('z', PX(.5), PY(.12)); ctx.fillText('decoder', PX(.76), PY(.97));
+  }
+  a_vae(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, false);
+    ctx.fillStyle = this.hexA('#5b8ef0',.1); ctx.strokeStyle = this.hexA('#5b8ef0',.4); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(PX(.08),PY(.15)); ctx.lineTo(PX(.08),PY(.85)); ctx.lineTo(PX(.34),PY(.62)); ctx.lineTo(PX(.34),PY(.38)); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = this.hexA(A,.1); ctx.strokeStyle = this.hexA(A,.4); ctx.beginPath(); ctx.moveTo(PX(.92),PY(.15)); ctx.lineTo(PX(.92),PY(.85)); ctx.lineTo(PX(.66),PY(.62)); ctx.lineTo(PX(.66),PY(.38)); ctx.closePath(); ctx.fill(); ctx.stroke();
+    const cloud = this.pts('vae', () => { const r = this.rng(52), gs = () => (r()+r()+r()-1.5)/1.5, a = []; for (let i=0;i<40;i++) a.push({u:gs(), v:gs(), ph:r()*6.28}); return a; });
+    ctx.strokeStyle = this.hexA(A,.35); ctx.setLineDash([4,4]); [.06,.11].forEach(rr => { ctx.beginPath(); ctx.ellipse(PX(.5),PY(.5),rr*W,rr*W*1.2,0,0,7); ctx.stroke(); }); ctx.setLineDash([]);
+    cloud.forEach(pt => { const jt = 1+.15*Math.sin(t/400+pt.ph); ctx.beginPath(); ctx.arc(PX(.5+pt.u*.05*jt),PY(.5+pt.v*.06*jt),2.4,0,7); ctx.fillStyle = this.hexA(A,.8); ctx.fill(); });
+    const sp = cloud[Math.floor((t/300)%cloud.length)]; ctx.beginPath(); ctx.arc(PX(.5+sp.u*.05),PY(.5+sp.v*.06),4.5,0,7); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.fillStyle = this.hexA('#8d93a6',.7); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillText('μ, σ → z ~ N', PX(.5), PY(.92));
+  }
+  a_gan(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const R = this.pts('ganR9', () => { const r = this.rng(61), gs = () => (r()+r()+r()-1.5)/1.5, a = []; for (let i=0;i<14;i++) a.push({x:.78+gs()*.09, y:.5+gs()*.22}); return a; });
+    const G = this.pts('ganG9', () => { const r = this.rng(62), gs = () => (r()+r()+r()-1.5)/1.5, a = []; for (let i=0;i<14;i++) a.push({sx:.15+gs()*.05, sy:.5+gs()*.28, tx:.78+gs()*.09, ty:.5+gs()*.22}); return a; });
+    const ph = (t%6000)/6000, k = this.eio(Math.min(1, ph/.85));
+    ctx.strokeStyle = this.hexA('#5b8ef0',.5); ctx.lineWidth = 1.4; ctx.fillStyle = 'rgba(91,142,240,.08)'; ctx.beginPath(); ctx.rect(PX(.26),PY(.34),PX(.16)-PX(0),PY(.66)-PY(.34)); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#5b8ef0'; ctx.font = '600 13px Space Grotesk'; ctx.textAlign = 'center'; ctx.fillText('G', PX(.34), PY(.54));
+    const bx = .6 - .12*k; ctx.strokeStyle = this.hexA('#e6e6ea', .5-.34*k); ctx.setLineDash([6,5]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(PX(bx),PY(.14)); ctx.lineTo(PX(bx),PY(.9)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = this.hexA('#e6e6ea',.6); ctx.font = '600 12px Space Grotesk'; ctx.fillText('D', PX(bx), PY(.09));
+    R.forEach(p => { ctx.beginPath(); ctx.arc(PX(p.x),PY(p.y),4.2,0,7); ctx.fillStyle = A; ctx.fill(); });
+    G.forEach(p => { const x = p.sx+(p.tx-p.sx)*k, y = p.sy+(p.ty-p.sy)*k; ctx.beginPath(); ctx.arc(PX(x),PY(y),4.2,0,7); ctx.fillStyle = '#5b8ef0'; ctx.fill(); });
+    for (let i=0;i<5;i++){ const zz = (t/700+i/5)%1; ctx.beginPath(); ctx.arc(PX(.06+zz*.18),PY(.5+(i-2)*.05),2.4,0,7); ctx.fillStyle = this.hexA('#8d93a6',.6); ctx.fill(); }
+    const conf = .5+.4*(1-k); ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('z', PX(.04), PY(.5)+3);
+    ctx.textAlign = 'right'; ctx.fillStyle = A; ctx.fillText('real', PX(.97), PY(.09)); ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.fillText('D → '+(k>.85?'≈0.5':conf.toFixed(2)), PX(.97), PY(.97));
+    ctx.textAlign = 'left'; ctx.fillStyle = this.hexA('#5b8ef0',.8); ctx.fillText('falso → real', PX(.03), PY(.97));
+  }
+  a_pinn(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const f = x => .5+.26*Math.sin(x*6.5+.3)*Math.exp(-x*.5);
+    const ph = (t%5200)/5200, k = this.eio(Math.min(1, ph/.8)), approx = x => f(x)+(1-k)*.16*Math.sin(x*4+1.2), res = 1-k;
+    ctx.strokeStyle = A; ctx.lineWidth = 2.6; ctx.beginPath();
+    for (let i=0;i<=60;i++){ const x=i/60; i?ctx.lineTo(PX(x),PY(approx(x))):ctx.moveTo(PX(x),PY(approx(x))); } ctx.stroke();
+    [.06,.22,.38,.54,.7,.86].forEach(x => { const bh = res*.24*(.5+.5*Math.sin(x*9)); ctx.strokeStyle = this.hexA('#ff6b6b',.75); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(PX(x),PY(.9)); ctx.lineTo(PX(x),PY(.9-bh)); ctx.stroke();
+      ctx.beginPath(); ctx.arc(PX(x),PY(.9),3,0,7); ctx.strokeStyle = this.hexA('#8d93a6',.7); ctx.lineWidth = 1.4; ctx.stroke(); });
+    [.14,.44,.74].forEach(x => { ctx.beginPath(); ctx.arc(PX(x),PY(f(x)),4.5,0,7); ctx.fillStyle = '#5b8ef0'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2; ctx.stroke(); });
+    ctx.fillStyle = this.hexA('#5b8ef0',.85); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('● datos', PX(.03), PY(.08));
+    ctx.fillStyle = this.hexA('#ff6b6b',.85); ctx.textAlign = 'right'; ctx.fillText('residuo EDP → 0', PX(.97), PY(.08));
+    ctx.fillStyle = this.hexA('#8d93a6',.7); ctx.textAlign = 'center'; ctx.fillText('puntos de colocación', PX(.5), PY(.99));
+  }
+  a_arima(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const N = 40, split = .64;
+    const raw = i => .32+.4*(i/N)+.09*Math.sin(i/N*11);
+    const diff = i => .5+.09*Math.sin(i/N*11);
+    const ph = (t%6400)/6400, morph = ph<.42?this.eio(ph/.42):(ph<.58?1:1-this.eio(Math.min(1,(ph-.58)/.42)));
+    const val = i => raw(i)+(diff(i)-raw(i))*morph, fc = 1-morph;
+    ctx.strokeStyle = '#5b8ef0'; ctx.lineWidth = 2; ctx.beginPath();
+    for (let i=0;i<=N*split;i++){ i?ctx.lineTo(PX(i/N),PY(val(i))):ctx.moveTo(PX(i/N),PY(val(i))); } ctx.stroke();
+    if (fc>.04){ ctx.fillStyle = this.hexA(A,.12*fc); ctx.beginPath();
+      for (let i=Math.floor(N*split);i<=N;i++){ const g=(i/N-split)/(1-split); ctx.lineTo(PX(i/N),PY(raw(i)-.06*g)); }
+      for (let i=N;i>=Math.floor(N*split);i--){ const g=(i/N-split)/(1-split); ctx.lineTo(PX(i/N),PY(raw(i)+.06*g)); } ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = this.hexA(A,fc); ctx.setLineDash([5,4]); ctx.lineWidth = 2; ctx.beginPath();
+      for (let i=Math.floor(N*split);i<=N;i++){ i===Math.floor(N*split)?ctx.moveTo(PX(i/N),PY(raw(i))):ctx.lineTo(PX(i/N),PY(raw(i))); } ctx.stroke(); ctx.setLineDash([]); }
+    ctx.strokeStyle = this.hexA('#e6e6ea',.18); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(PX(split),PY(0)); ctx.lineTo(PX(split),PY(1)); ctx.stroke();
+    ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText(morph>.5?'d: diferenciar → estacionaria':'AR + MA → pronóstico', PX(.03), PY(.06));
+  }
+  a_sarimax(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, true);
+    const N = 48, split = .64, per = 12;
+    const exog = this.pts('sarX9', () => { const r = this.rng(71), a = []; for (let i=0;i<=N;i++) a.push(r()>.84?1:0); return a; });
+    const val = i => .5+.2*Math.sin(i/per*6.283)+(exog[i]?.13:0)+.02*Math.sin(i/2.3);
+    for (let s=0;s*per<=N;s++) if (s%2===0){ ctx.fillStyle = this.hexA(A,.05); ctx.fillRect(PX(s*per/N),PY(0),PX(per/N)-PX(0),PY(1)-PY(0)); }
+    for (let i=0;i<=N;i++){ if (exog[i]){ ctx.fillStyle = this.hexA('#2fd4c4',.55); ctx.fillRect(PX(i/N)-2, PY(.92), 4, -(PY(.92)-PY(.8))); ctx.strokeStyle = this.hexA('#2fd4c4',.4); ctx.lineWidth = 1; ctx.setLineDash([2,3]); ctx.beginPath(); ctx.moveTo(PX(i/N),PY(.8)); ctx.lineTo(PX(i/N),PY(val(i))); ctx.stroke(); ctx.setLineDash([]); } }
+    ctx.strokeStyle = '#5b8ef0'; ctx.lineWidth = 2; ctx.beginPath();
+    for (let i=0;i<=N*split;i++){ i?ctx.lineTo(PX(i/N),PY(val(i))):ctx.moveTo(PX(i/N),PY(val(i))); } ctx.stroke();
+    ctx.fillStyle = this.hexA(A,.12); ctx.beginPath();
+    for (let i=Math.floor(N*split);i<=N;i++){ const g=(i/N-split)/(1-split); ctx.lineTo(PX(i/N),PY(val(i)-.05*g)); }
+    for (let i=N;i>=Math.floor(N*split);i--){ const g=(i/N-split)/(1-split); ctx.lineTo(PX(i/N),PY(val(i)+.05*g)); } ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = A; ctx.setLineDash([5,4]); ctx.lineWidth = 2; ctx.beginPath();
+    for (let i=Math.floor(N*split);i<=N;i++){ i===Math.floor(N*split)?ctx.moveTo(PX(i/N),PY(val(i))):ctx.lineTo(PX(i/N),PY(val(i))); } ctx.stroke(); ctx.setLineDash([]);
+    const sweep = (t/2600)%1*split; ctx.beginPath(); ctx.arc(PX(sweep),PY(val(sweep*N)),3.5,0,7); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.fillStyle = this.hexA(A,.85); ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('estación (S)', PX(.03), PY(.06)); ctx.fillStyle = this.hexA('#2fd4c4',.9); ctx.textAlign = 'right'; ctx.fillText('X exógena ▲', PX(.97), PY(.06));
+  }
+  a_prophet(ctx, W, H, t, A) {
+    const { PX, PY } = this.base(ctx, W, H, false);
+    const trend = x => .5 - .16*x - (x>.4?.14*(x-.4):0);
+    const seas = x => .5 + .15*Math.sin(x*22);
+    const comb = x => trend(x) + (seas(x)-.5) + ((Math.abs(x-.55)<.02||Math.abs(x-.8)<.02)?.16:0);
+    ctx.strokeStyle = this.hexA('#8d93a6',.6); ctx.lineWidth = 1.4; ctx.setLineDash([4,3]); ctx.beginPath();
+    for (let i=0;i<=60;i++){ const x=i/60; i?ctx.lineTo(PX(x),PY(trend(x))):ctx.moveTo(PX(x),PY(trend(x))); } ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = this.hexA('#2fd4c4',.45); ctx.lineWidth = 1.2; ctx.beginPath();
+    for (let i=0;i<=60;i++){ const x=i/60; i?ctx.lineTo(PX(x),PY(seas(x))):ctx.moveTo(PX(x),PY(seas(x))); } ctx.stroke();
+    [.55,.8].forEach(hx => { ctx.strokeStyle = this.hexA('#ff8b6b',.6); ctx.setLineDash([3,3]); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(PX(hx),PY(.12)); ctx.lineTo(PX(hx),PY(.88)); ctx.stroke(); ctx.setLineDash([]); });
+    const rev = this.eio(Math.min(1,(t%5000)/5000/.82)); ctx.strokeStyle = A; ctx.lineWidth = 2.6; ctx.beginPath();
+    for (let i=0;i<=60*rev;i++){ const x=i/60; i?ctx.lineTo(PX(x),PY(comb(x))):ctx.moveTo(PX(x),PY(comb(x))); } ctx.stroke();
+    ctx.font = '9px JetBrains Mono'; ctx.textAlign = 'left';
+    ctx.fillStyle = this.hexA('#8d93a6',.85); ctx.fillText('g(t) tendencia', PX(.02), PY(.1));
+    ctx.fillStyle = this.hexA('#2fd4c4',.85); ctx.fillText('s(t) estacional', PX(.02), PY(.17));
+    ctx.fillStyle = this.hexA('#ff8b6b',.85); ctx.fillText('h(t) festivos', PX(.02), PY(.24));
+    ctx.fillStyle = A; ctx.textAlign = 'right'; ctx.fillText('y = g + s + h', PX(.98), PY(.1));
+  }
+
+  renderVals() {
+    const { tab, open, phase, lang } = this.state;
+    const L = this.LABELS[lang];
+    const om = this.MODELS.find(m => m.id === open) || null;
+    const cats = this.CATS.map(c => {
+      const on = c.id === tab;
+      return { ...c, label: L.cats[c.id],
+        onClick: () => this.setState({ tab: c.id }),
+        style: `display:inline-flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;padding:9px 15px;border-radius:11px;cursor:pointer;transition:all .15s;border:1px solid ${on?'transparent':'rgba(255,255,255,.14)'};background:${on?'linear-gradient(135deg,#5b8ef0,#b57bff)':'rgba(255,255,255,.03)'};color:${on?'#ffffff':'#a3a8b6'};`,
+        badge: `font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:1px 6px;border-radius:20px;background:${on?'rgba(0,0,0,.22)':'rgba(255,255,255,.07)'};color:${on?'#eef0f6':'#8b8fa3'};`,
+      };
+    });
+    const visibleModels = this.MODELS.filter(m => m.tab === tab).map((m, i) => ({ ...m,
+      num: String(i + 1).padStart(2, '0'),
+      cat: m.cat[lang], desc: m.desc[lang], textAccent: '#b57bff',
+      footer: m.hparams.length + ' ' + L.hpUnit + ' · ' + L.clickHint,
+      chipBg: this.hexA('#b57bff', .12), chipBd: this.hexA('#b57bff', .28),
+      onClick: () => this.open(m.id),
+    }));
+    const openModel = om ? { ...om,
+      headBg: this.hexA(om.accent, .07),
+      cat: om.cat[lang], long: om.long[lang], use: om.use[lang],
+      howLiveLbl: L.howLive, stepsLbl: L.steps, whatLbl: L.what, formulaLbl: L.formula, idealForLbl: L.idealFor, hparamsLbl: L.hparams,
+      steps: om.steps.map((s, i) => { const active = i === (phase % om.steps.length);
+        return { t: s.t[lang], d: s.d[lang], n: i + 1,
+          wrap: `display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:11px;transition:all .3s;border:1px solid ${active?this.hexA(om.accent,.4):'#20242f'};background:${active?this.hexA(om.accent,.08):'#12141b'};`,
+          badge: `flex-shrink:0;width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;background:${active?om.accent:'#20242f'};color:${active?'#0f1117':'#7f8598'};`,
+        }; }),
+      hparams: om.hparams.map(hp => ({ n: hp.n, def: hp.def, d: hp.d[lang],
+        defStyle: `font-family:'JetBrains Mono',monospace;font-size:10px;color:#8d93a6;background:#0f1117;border:1px solid #262b38;padding:1px 6px;border-radius:5px;`,
+      })),
+    } : null;
+    const langBtn = a => `font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;border:none;background:${a?'rgba(255,255,255,.92)':'transparent'};color:${a?'#14141b':'#8b8fa3'};`;
+    const pgCfg = om ? this.PLAYGROUNDS[om.id] : null;
+    const hasPg = !!pgCfg, isPlayground = hasPg && this.state.mode === 'playground', isAnim = !isPlayground;
+    let pgPanel = null, pgCaption = '', pgMetric = '';
+    if (isPlayground && typeof window !== 'undefined' && window.MLKit) {
+      const key = om.id + ':' + JSON.stringify(this.state.pgParams);
+      if (this._pgKey !== key || !this._pg) { try { this._pg = window.MLKit.fit(pgCfg.type, this.state.pgParams); } catch (e) { this._pg = { error: String((e && e.message) || e) }; } this._pgKey = key; }
+      pgCaption = pgCfg.caption[lang];
+      pgPanel = this._buildPanel(pgCfg, lang);
+      const m = this._pg; if (m && m.metric) pgMetric = m.metric.key + ': ' + m.metric.val + (m.metric2 ? '   ' + m.metric2.key + ': ' + m.metric2.val : '');
+    }
+    const leftLbl = isPlayground ? L.pgLive : L.howLive;
+    const segStyle = a => `font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:5px 11px;border-radius:7px;cursor:pointer;border:none;background:${a?'linear-gradient(135deg,#5b8ef0,#b57bff)':'transparent'};color:${a?'#fff':'#8b8fa3'};`;
+    return { rootRef: this.rootRef, modalRef: this.modalRef, cats, visibleModels, openModel, t: L,
+      hasPg, isPlayground, isAnim, pgPanel, pgCaption, pgMetric, leftLbl,
+      setAnim: () => this.setState({ mode: 'anim' }), setPg: () => this.setState({ mode: 'playground' }),
+      animTabStyle: segStyle(isAnim), pgTabStyle: segStyle(isPlayground),
+      setEs: () => this.setState({ lang: 'es' }), setEn: () => this.setState({ lang: 'en' }),
+      esStyle: langBtn(lang === 'es'), enStyle: langBtn(lang === 'en'),
+      close: () => this.close(), stop: e => e.stopPropagation() };
+  }
+}
+</script>
+</body>
+</html>
