@@ -760,7 +760,7 @@ class Component extends DCLogic {
     logistic:{type:'logreg', caption:{es:'2 blobs gaussianos · 2 clases', en:'2 gaussian blobs · 2 classes'}, controls:[
       {key:'C', name:'C', kind:'slider', min:0.01, max:8, step:0.01, default:1},
       {key:'penalty', name:'penalty', kind:'select', default:'l2', options:[{v:'l2',l:{es:'l2',en:'l2'}},{v:'none',l:{es:'none',en:'none'}}]}]},
-    naivebayes:{type:'gnb', caption:{es:'2 blobs gaussianos · 2 clases', en:'2 gaussian blobs · 2 classes'}, controls:[
+    naivebayes:{type:'gnb', caption:{es:'clase compacta vs difusa · 2 clases', en:'compact vs diffuse class · 2 classes'}, controls:[
       {key:'var_exp', name:'var_smoothing', kind:'slider', min:-9, max:0, step:1, default:-9}]},
     svm:{type:'svmlin', caption:{es:'2 blobs · kernel lineal', en:'2 blobs · linear kernel'}, controls:[
       {key:'C', name:'C', kind:'slider', min:0.01, max:8, step:0.01, default:1}]},
@@ -789,8 +789,55 @@ class Component extends DCLogic {
     densenn:{type:'mlp', caption:{es:'two-moons · no lineal', en:'two-moons · non-linear'}, controls:[
       {key:'hidden_units', name:'hidden_units', kind:'slider', min:1, max:16, step:1, default:6},
       {key:'activation', name:'activation', kind:'select', default:'relu', options:[{v:'relu',l:{es:'relu',en:'relu'}},{v:'tanh',l:{es:'tanh',en:'tanh'}}]},
-      {key:'learning_rate', name:'learning_rate', kind:'slider', min:0.02, max:1, step:0.02, default:0.3},
-      {key:'epochs', name:'epochs', kind:'slider', min:20, max:400, step:20, default:160}]}
+      {key:'learning_rate', name:'learning_rate', kind:'slider', min:0.02, max:1, step:0.02, default:0.5},
+      {key:'epochs', name:'epochs', kind:'slider', min:20, max:600, step:20, default:400}]},
+    lightgbm:{type:'lightgbm', caption:{es:'two-moons ruidoso · clasificación', en:'noisy two-moons · classification'}, controls:[
+      {key:'num_leaves', name:'num_leaves', kind:'slider', min:2, max:31, step:1, default:12},
+      {key:'learning_rate', name:'learning_rate', kind:'slider', min:0.01, max:1, step:0.01, default:0.1},
+      {key:'n_estimators', name:'n_estimators', kind:'slider', min:1, max:120, step:1, default:60},
+      {key:'min_child_samples', name:'min_child_samples', kind:'slider', min:1, max:40, step:1, default:5}]},
+    xgboost:{type:'xgboost', caption:{es:'datos 1-D con curvatura', en:'1-D data with curvature'}, controls:[
+      {key:'eta', name:'eta (learning_rate)', kind:'slider', min:0.03, max:0.6, step:0.01, default:0.3},
+      {key:'max_depth', name:'max_depth', kind:'slider', min:1, max:6, step:1, default:3},
+      {key:'lambda', name:'lambda (L2)', kind:'slider', min:0, max:50, step:1, default:1},
+      {key:'gamma', name:'gamma (min_split_gain)', kind:'slider', min:0, max:0.2, step:0.01, default:0}]},
+    hdbscan:{type:'hdbscan', caption:{es:'densidad variable + ruido', en:'varying density + noise'}, controls:[
+      {key:'min_cluster_size', name:'min_cluster_size', kind:'slider', min:2, max:25, step:1, default:5},
+      {key:'min_samples', name:'min_samples', kind:'slider', min:2, max:20, step:1, default:5},
+      {key:'cluster_selection_epsilon', name:'cluster_selection_epsilon', kind:'slider', min:0, max:0.3, step:0.01, default:0},
+      {key:'cluster_selection_method', name:'cluster_selection_method', kind:'select', default:'eom', options:[{v:'eom',l:{es:'eom',en:'eom'}},{v:'leaf',l:{es:'leaf',en:'leaf'}}]}]},
+    tsne:{type:'tsne', caption:{es:'two-moons · color = clase real', en:'two-moons · color = true class'}, controls:[
+      {key:'perplexity', name:'perplexity', kind:'slider', min:5, max:50, step:1, default:30},
+      {key:'learning_rate', name:'learning_rate', kind:'slider', min:5, max:400, step:5, default:15},
+      {key:'n_iter', name:'n_iter', kind:'slider', min:50, max:500, step:50, default:300}]},
+    umap:{type:'umap', caption:{es:'3 grupos en 6-D → 2-D', en:'3 clusters in 6-D → 2-D'}, controls:[
+      {key:'n_neighbors', name:'n_neighbors', kind:'slider', min:3, max:40, step:1, default:15},
+      {key:'min_dist', name:'min_dist', kind:'slider', min:0, max:0.95, step:0.05, default:0.1}]},
+    arima:{type:'arima', caption:{es:'serie 1-D: tendencia + AR(2)', en:'1-D series: trend + AR(2)'}, controls:[
+      {key:'p', name:'p (AR)', kind:'slider', min:0, max:4, step:1, default:2},
+      {key:'d', name:'d (I)', kind:'slider', min:0, max:2, step:1, default:1},
+      {key:'q', name:'q (MA)', kind:'slider', min:0, max:2, step:1, default:1}]},
+    prophet:{type:'prophet', caption:{es:'serie 1-D: tendencia + estacionalidad', en:'1-D series: trend + seasonality'}, controls:[
+      {key:'changepoint_prior_scale', name:'changepoint_prior_scale', kind:'slider', min:0.01, max:0.5, step:0.01, default:0.05},
+      {key:'seasonality_prior_scale', name:'seasonality_prior_scale', kind:'slider', min:0.05, max:20, step:0.05, default:10},
+      {key:'seasonality_mode', name:'seasonality_mode', kind:'select', default:'additive', options:[{v:'additive',l:{es:'additive',en:'additive'}},{v:'multiplicative',l:{es:'multiplic.',en:'multiplic.'}}]},
+      {key:'changepoint_range', name:'changepoint_range', kind:'slider', min:0.5, max:1, step:0.05, default:0.8}]},
+    lstm:{type:'lstm', caption:{es:'onda 1-D · predicción a 1 paso', en:'1-D wave · one-step forecast'}, controls:[
+      {key:'units', name:'units', kind:'slider', min:1, max:8, step:1, default:4},
+      {key:'epochs', name:'epochs (BPTT)', kind:'slider', min:20, max:300, step:20, default:160},
+      {key:'dropout', name:'recurrent_dropout', kind:'slider', min:0, max:0.5, step:0.05, default:0}]},
+    autoencoder:{type:'autoencoder', caption:{es:'nube en arco · variedad 1-D', en:'arc cloud · 1-D manifold'}, controls:[
+      {key:'latent_dim', name:'latent_dim', kind:'slider', min:1, max:2, step:1, default:1},
+      {key:'activation', name:'activation', kind:'select', default:'tanh', options:[{v:'linear',l:{es:'linear',en:'linear'}},{v:'tanh',l:{es:'tanh',en:'tanh'}},{v:'relu',l:{es:'relu',en:'relu'}}]},
+      {key:'hidden_units', name:'hidden_units', kind:'slider', min:2, max:12, step:1, default:6}]},
+    vae:{type:'vae', caption:{es:'puntos 2-D en variedad 1-D', en:'2-D points on a 1-D manifold'}, controls:[
+      {key:'beta', name:'beta (KL)', kind:'slider', min:0, max:8, step:0.1, default:1},
+      {key:'learning_rate', name:'learning_rate', kind:'slider', min:0.02, max:0.25, step:0.01, default:0.1},
+      {key:'epochs', name:'epochs', kind:'slider', min:40, max:700, step:20, default:400}]},
+    pinn:{type:'pinn', caption:{es:'EDO 1-D · datos escasos + física', en:'1-D ODE · sparse data + physics'}, controls:[
+      {key:'lambda_pde', name:'lambda_pde', kind:'slider', min:0, max:3, step:0.1, default:1},
+      {key:'n_collocation', name:'n_collocation', kind:'slider', min:2, max:40, step:1, default:20},
+      {key:'hidden_units', name:'hidden_units', kind:'slider', min:2, max:14, step:1, default:8}]}
   };
 
   componentDidMount() {
